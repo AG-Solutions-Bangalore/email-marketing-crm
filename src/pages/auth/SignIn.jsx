@@ -108,7 +108,7 @@ const SignIn = () => {
                 variant="h4"
                 className="text-center font-bold mb-6 text-blue-gray-800"
               >
-                Sign into your account
+                Sign into your account Email Marketing
               </Typography>
               <form onSubmit={handleSubmit} method="POST" className="space-y-6">
                 <div>
