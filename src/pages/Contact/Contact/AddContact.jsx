@@ -67,13 +67,14 @@ const AddContact = () => {
       setIsButtonDisabled(false);
       return;
     }
+    const groupString = contact.contact_group.join(",");
 
     const data = {
       contact_name: contact.contact_name,
       contact_mobile: contact.contact_mobile,
       contact_email: contact.contact_email,
       contact_address: contact.contact_address,
-      contact_group: contact.contact_group, // Single value for contact_group
+      contact_group: groupString,
       contact_pincode: contact.contact_pincode,
       contact_state: contact.contact_state,
     };

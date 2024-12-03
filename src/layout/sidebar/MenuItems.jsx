@@ -61,7 +61,7 @@ const getMenuItems = (userTypeId) => [
         id: "group",
         title: "Group",
         icon: IconUsersGroup,
-        href: "/master/states",
+        href: "/group",
       },
     ],
   },
