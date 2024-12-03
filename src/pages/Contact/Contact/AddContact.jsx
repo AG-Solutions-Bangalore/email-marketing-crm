@@ -1,29 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../../../layout/Layout";
 import axios from "axios";
 import BASE_URL from "../../../base/BaseUrl";
 import toast from "react-hot-toast";
 import { Button } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  OutlinedInput,
-} from "@mui/material";
+import { FormControl, Select, MenuItem, OutlinedInput } from "@mui/material";
 import SelectInput from "../../../components/common/SelectInput";
-
-const groupNames = [
-  { value: "group1", label: "Group 1" },
-  { value: "group2", label: "Group 2" },
-  { value: "group3", label: "Group 3" },
-  { value: "group4", label: "Group 4" },
-  { value: "group5", label: "Group 5" },
-  { value: "group6", label: "Group 6" },
-  { value: "group7", label: "Group 7" },
-  { value: "group8", label: "Group 8" },
-];
 
 const AddContact = () => {
   const [contact, setContact] = useState({
@@ -39,6 +22,8 @@ const AddContact = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const navigate = useNavigate();
   const [mobileError, setMobileError] = useState("");
+  const [state, setState] = useState([]);
+  const [group, setGroup] = useState([]);
 
   const handleGroupChange = (event) => {
     const { value } = event.target;
@@ -80,7 +65,7 @@ const AddContact = () => {
     };
 
     try {
-      await axios.post(`${BASE_URL}/panel-create-group`, data, {
+      await axios.post(`${BASE_URL}/panel-create-contact`, data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -94,7 +79,7 @@ const AddContact = () => {
         contact_address: "",
         contact_state: "",
         contact_pincode: "",
-        contact_group: "", // Reset to empty string after successful submit
+        contact_group: "",
       });
     } catch (error) {
       toast.error("Error adding contact!");
@@ -114,6 +99,36 @@ const AddContact = () => {
   const inputClass =
     "w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 border-green-500";
 
+  const getStateData = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/panel-fetch-state`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      setState(res.data.state || []);
+    } catch (error) {
+      console.error("Failed to fetch profile:", error);
+    }
+  };
+  const getGroupData = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/panel-fetch-group`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      setGroup(res.data.group);
+    } catch (error) {
+      console.error("Failed to fetch profile:", error);
+    }
+  };
+  useEffect(() => {
+    getStateData();
+    getGroupData();
+  }, []);
   return (
     <Layout>
       <div className="bg-[#FFFFFF] p-4 rounded-lg">
@@ -161,6 +176,7 @@ const AddContact = () => {
                 labelId="demo-group-name-label"
                 id="demo-group-name"
                 multiple
+                name="contact_group"
                 value={contact.contact_group} // Now it's an array
                 onChange={handleGroupChange} // Handles multi-selection
                 input={
@@ -180,9 +196,9 @@ const AddContact = () => {
                   />
                 }
               >
-                {groupNames.map((group) => (
-                  <MenuItem key={group.value} value={group.value}>
-                    {group.label}
+                {group.map((group) => (
+                  <MenuItem key={group.id} value={group.id}>
+                    {group.group_name}
                   </MenuItem>
                 ))}
               </Select>
@@ -217,7 +233,10 @@ const AddContact = () => {
             <div>
               <SelectInput
                 label="State"
-                options={groupNames}
+                options={state.map((item) => ({
+                  value: item.state_name,
+                  label: item.state_name,
+                }))}
                 required
                 value={contact.contact_state || ""}
                 name="contact_state"

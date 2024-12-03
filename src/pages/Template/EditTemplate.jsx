@@ -4,8 +4,8 @@ import axios from "axios";
 import BASE_URL from "../../base/BaseUrl";
 import { IconInfoCircle } from "@tabler/icons-react";
 import toast from "react-hot-toast";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import ReactQuill from "react-quill"; // Import React Quill
+import "react-quill/dist/quill.snow.css";
 import { Button } from "@mantine/core";
 import { useNavigate, useParams } from "react-router-dom";
 import SelectInput from "../../components/common/SelectInput";
@@ -39,7 +39,6 @@ const EditTemplate = () => {
         }
       );
 
-      console.log("API response:", res.data);
       if (res.data?.template) {
         setTemplate(res.data.template);
       } else {
@@ -58,9 +57,12 @@ const EditTemplate = () => {
     setTemplate((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleEditorChange = (event, editor) => {
-    const data = editor.getData();
-    setTemplate((prevTemplate) => ({ ...prevTemplate, template_design: data }));
+  const handleEditorChange = (value) => {
+    console.log("Editor Content:", value);
+    setTemplate((prevTemplate) => ({
+      ...prevTemplate,
+      template_design: value,
+    }));
   };
 
   const onSubmit = async (e) => {
@@ -98,6 +100,35 @@ const EditTemplate = () => {
 
   const inputClass =
     "w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 border-green-500";
+  const modules = {
+    toolbar: [
+      [{ font: [] }, { size: [] }],
+      [
+        { header: "1" },
+        { header: "2" },
+        "bold",
+        "italic",
+        "underline",
+        "strike",
+      ],
+      [
+        { align: [] },
+        { list: "ordered" },
+        { list: "bullet" },
+        "link",
+        "blockquote",
+      ],
+      ["link", "image", "video"],
+      [{ color: [] }, { background: [] }],
+      ["code-block", "blockquote"],
+      ["clean"],
+    ],
+    history: {
+      delay: 1000,
+      maxStack: 10,
+      userOnly: true,
+    },
+  };
 
   return (
     <Layout>
@@ -160,18 +191,13 @@ const EditTemplate = () => {
           </div>
           <div className="editor-container">
             <FormLabel required>Template Design</FormLabel>
-            {console.log("CKEditor initial data:", template.template_design)}
 
-            <CKEditor
-              editor={ClassicEditor}
-              data={template.template_design || ""}
+            <ReactQuill
+              value={template.template_design}
               onChange={handleEditorChange}
-              name="template_design"
-              config={{
-                toolbar: {
-                  shouldNotGroupWhenFull: true,
-                },
-              }}
+              modules={modules}
+              theme="snow"
+              placeholder="Type your content here..."
             />
           </div>
           <div className="flex flex-col sm:flex-row sm:justify-center items-center gap-4">
@@ -193,14 +219,14 @@ const EditTemplate = () => {
       </div>
       <style>
         {`
-          .editor-container .ck-editor__editable {
+          .editor-container .ql-editor {
             min-height: 20rem;
             max-height: 40rem;
             overflow-y: auto;
             overflow-x: auto;
           }
           @media (max-width: 768px) {
-            .editor-container .ck-editor__editable {
+            .editor-container .ql-editor {
               min-height: 15rem;
               max-height: 30rem;
             }

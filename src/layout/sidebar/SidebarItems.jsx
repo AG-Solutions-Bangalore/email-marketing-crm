@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import getMenuItems from "./MenuItems";
 import { Box, List } from "@mui/material";
 
@@ -10,11 +10,18 @@ const SidebarItems = ({ toggleMobileSidebar, isCollapsed }) => {
   const location = useLocation();
   const pathDirect = location.pathname;
   const userTypeId = localStorage.getItem("user_type_id");
-  console.log(userTypeId, "userTypeId");
+  // console.log(userTypeId, "userTypeId");
   const MenuData = getMenuItems(userTypeId);
-  const [currentOpenItem, setCurrentOpenItem] = useState("");
+  // const [currentOpenItem, setCurrentOpenItem] = useState("");
+  // console.log(currentOpenItem);
+  const [currentOpenItem, setCurrentOpenItem] = useState(
+    localStorage.getItem("currentOpenItem") || ""
+  );
 
-  //chnage mm
+  useEffect(() => {
+    localStorage.setItem("currentOpenItem", currentOpenItem);
+  }, [currentOpenItem]);
+
   return (
     <Box sx={{ px: "20px" }}>
       <List sx={{ pt: 0 }} className="sidebarNav" component="div">

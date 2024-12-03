@@ -21,7 +21,7 @@ const Group = () => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`${BASE_URL}/panel-fetch-group-list`, {
+      const response = await axios.get(`${BASE_URL}/panel-fetch-group`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
