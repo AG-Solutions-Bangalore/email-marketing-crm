@@ -8,7 +8,7 @@ import BASE_URL from "../../../base/BaseUrl";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { FormLabel } from "@mui/material";
-import SelectField from "../../../components/common/SelectInput";
+import SelectInput from "../../../components/common/SelectInput";
 
 const PromterSummary = () => {
   const navigate = useNavigate();
@@ -117,7 +117,7 @@ const PromterSummary = () => {
           </h3>
           <form id="dowRecp" autoComplete="off">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              <SelectField
+              <SelectInput
                 label="Notice Title"
                 name="indicomp_promoter"
                 value={downloadDonor.indicomp_promoter}

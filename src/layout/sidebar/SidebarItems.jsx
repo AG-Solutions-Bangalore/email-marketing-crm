@@ -1,5 +1,5 @@
-import React from "react";
-import Menuitems from "./MenuItems";
+import React, { useState } from "react";
+import getMenuItems from "./MenuItems";
 import { Box, List } from "@mui/material";
 
 import { useLocation } from "react-router-dom";
@@ -11,7 +11,9 @@ const SidebarItems = ({ toggleMobileSidebar, isCollapsed }) => {
   const pathDirect = location.pathname;
   const userTypeId = localStorage.getItem("user_type_id");
   console.log(userTypeId, "userTypeId");
-  const MenuData = Menuitems(userTypeId);
+  const MenuData = getMenuItems(userTypeId);
+  const [currentOpenItem, setCurrentOpenItem] = useState("");
+
   //chnage mm
   return (
     <Box sx={{ px: "20px" }}>
@@ -37,6 +39,8 @@ const SidebarItems = ({ toggleMobileSidebar, isCollapsed }) => {
                 pathDirect={pathDirect}
                 onClick={toggleMobileSidebar}
                 isCollapsed={isCollapsed}
+                currentOpenItem={currentOpenItem}
+                setCurrentOpenItem={setCurrentOpenItem}
               />
             );
           }

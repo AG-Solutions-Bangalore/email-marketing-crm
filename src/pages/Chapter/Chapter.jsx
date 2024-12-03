@@ -77,7 +77,7 @@ const Chapter = () => {
   });
 
   const [user, setUser] = useState({
-    name: "",
+    contact_name: "",
     email: "",
     first_name: "",
     last_name: "",
@@ -85,7 +85,7 @@ const Chapter = () => {
     password: "",
     confirm_password: "",
     user_type_id: "",
-    user_status:""
+    user_status: "",
   });
 
   const [selected_user_id, setSelectedUserId] = useState("");
@@ -132,7 +132,7 @@ const Chapter = () => {
     setOpen(false);
     setIndividualDrawer(false);
     setUser({
-      name: "",
+      contact_name: "",
       email: "",
       first_name: "",
       last_name: "",
@@ -140,7 +140,7 @@ const Chapter = () => {
       password: "",
       confirm_password: "",
       user_type_id: "",
-      user_status:""
+      user_status: "",
     });
   };
 
@@ -153,7 +153,7 @@ const Chapter = () => {
     setOpen1(false);
     setIndividualDrawer(false);
     setUser({
-      name: "",
+      contact_name: "",
       email: "",
       first_name: "",
       last_name: "",
@@ -161,7 +161,7 @@ const Chapter = () => {
       password: "",
       confirm_password: "",
       user_type_id: "",
-      user_status:""
+      user_status: "",
     });
   };
   const fetchData = () => {
@@ -238,7 +238,7 @@ const Chapter = () => {
         handleClose();
         toast.success("User is Created Successfully");
         setUser({
-          name: "",
+          contact_name: "",
           email: "",
           first_name: "",
           last_name: "",
@@ -276,7 +276,7 @@ const Chapter = () => {
       phone: user.phone,
       user_type: user.user_type_id,
       chapter_id: user.chapter_code,
-      user_status:user.user_status,
+      user_status: user.user_status,
     };
 
     try {
@@ -325,13 +325,13 @@ const Chapter = () => {
             onClick={() => {
               setUser({
                 ...user,
-                name: row.original.name,
+                contact_name: row.original.name,
                 email: row.original.email,
                 phone: row.original.phone,
                 first_name: row.original.first_name,
                 last_name: row.original.last_name,
                 user_type_id: row.original.user_type_id,
-                user_status:row.original.user_status,
+                user_status: row.original.user_status,
               });
               setSelectedUserId(row.original.id);
               handleClickOpen1();

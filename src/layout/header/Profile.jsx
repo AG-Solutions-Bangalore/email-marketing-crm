@@ -38,16 +38,16 @@ const Profile = () => {
   const location = useLocation();
   const getData = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/api/fetch-profile`, {
+      const res = await axios.get(`${BASE_URL}/panel-fetch-profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       console.log("API response:", res.data);
-      setFirstName(res.data.user.first_name || "");
-      setPhone(res.data.user.phone || "");
-      setEmail(res.data.user.email || "");
+      setFirstName(res.data.profile.name || "");
+      setPhone(res.data.profile.mobile || "");
+      setEmail(res.data.profile.email || "");
     } catch (error) {
       console.error("Failed to fetch profile:", error);
       toast.error("Failed to load profile data");
@@ -70,10 +70,10 @@ const Profile = () => {
     }
     setIsButtonDisabled(true);
 
-    const data = { first_name: firstName, phone: phone };
+    const data = { mobile: firstName, phone: phone };
 
     try {
-      const res = await axios.post(`${BASE_URL}/api/update-profile`, data, {
+      const res = await axios.post(`${BASE_URL}/panel-update-profile`, data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -177,7 +177,7 @@ const Profile = () => {
         onClick={handleClick2}
       >
         <Avatar
-          src="/src/assets/profile/user-1.jpg"
+          src="/src/assets/profile/user_1.png"
           alt="image"
           sx={{
             width: 35,

@@ -40,7 +40,7 @@ const ViewChapter = () => {
   const [chapter, setChapter] = useState([]);
   const [users, setUsers] = useState([]);
   const [user, setUser] = useState({
-    name: "",
+    contact_name: "",
     email: "",
     first_name: "",
     last_name: "",
@@ -68,7 +68,7 @@ const ViewChapter = () => {
     setOpen1(false);
     setIndividualDrawer(false);
     setUser({
-      name: "",
+      contact_name: "",
       email: "",
       first_name: "",
       last_name: "",
@@ -153,7 +153,7 @@ const ViewChapter = () => {
         handleClose();
         toast.success("User is Created Successfully");
         setUser({
-          name: "",
+          contact_name: "",
           email: "",
           first_name: "",
           last_name: "",
@@ -239,7 +239,7 @@ const ViewChapter = () => {
             onClick={() => {
               setUser({
                 ...user,
-                name: row.original.name,
+                contact_name: row.original.name,
                 email: row.original.email,
                 phone: row.original.phone,
                 first_name: row.original.first_name,
