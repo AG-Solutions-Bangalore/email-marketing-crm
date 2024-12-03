@@ -157,6 +157,10 @@ const AppProvider = ({ children }) => {
           //contact
           "/Contact",
           "/Contact/edit",
+          //group
+          "/group",
+          "/group/add",
+          "/group/edit",
         ];
 
         const isAllowedPath = allowedPath.some((path) =>
