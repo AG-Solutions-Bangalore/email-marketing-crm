@@ -10,25 +10,30 @@ import { Link, useNavigate } from "react-router-dom";
 import { FormLabel } from "@mui/material";
 
 const ForgetPassword = () => {
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
   const onResetPassword = async (e) => {
     e.preventDefault();
+    const data = { email: email };
+
     try {
-      const response = await fetch(
-        `${BASE_URL}/api/send-password?username=${username}&email=${email}`,
-        { method: "POST" }
-      );
-      const data = await response.json();
-      if (response.ok) {
+      const response = await fetch(`${BASE_URL}/panel-send-password`, {
+        method: "POST",
+
+        body: JSON.stringify(data),
+      });
+
+      const responseData = await response.json();
+
+      if (responseData.Status === "200") {
         toast.success("New Password Sent to your Email");
       } else {
         toast.error("Email not sent. Please try again.");
       }
     } catch (error) {
       toast.error("An error occurred.");
+      console.error("Error:", error); // Optional: Log the error for debugging
     }
   };
 
@@ -57,7 +62,7 @@ const ForgetPassword = () => {
             Enter your email to reset your password.
           </Typography>
           <form onSubmit={onResetPassword} className="space-y-6">
-            <div>
+            {/* <div>
               <FormLabel required>Username</FormLabel>
               <input
                 type="text"
@@ -67,7 +72,7 @@ const ForgetPassword = () => {
                 className={inputClass}
                 required
               />
-            </div>
+            </div> */}
             <div>
               <FormLabel required>Email</FormLabel>
               <input

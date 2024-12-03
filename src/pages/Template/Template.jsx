@@ -78,10 +78,10 @@ const Template = () => {
                 navigate(`/templates/edit/${row.original.id}`);
               }}
             />
-            <IconTrash
+            {/* <IconTrash
               className="cursor-pointer text-blue-600 hover:text-red-800"
               title="Delete"
-            />
+            /> */}
           </Flex>
         ),
       },

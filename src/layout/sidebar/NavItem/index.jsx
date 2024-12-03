@@ -32,7 +32,7 @@ export default function NavItem({
   //   }
   //   return false;
   // });
-  console.log(currentOpenItem);
+  // console.log(currentOpenItem);
   const isExpanded = currentOpenItem === item?.id;
   // React.useEffect(() => {
   //   if (item?.subItems) {

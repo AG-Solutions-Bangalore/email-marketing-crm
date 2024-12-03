@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Layout from "../../layout/Layout";
 import axios from "axios";
 import BASE_URL from "../../base/BaseUrl";
 import { IconInfoCircle } from "@tabler/icons-react";
 import toast from "react-hot-toast";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import ReactQuill from "react-quill"; // Import React Quill
+import "react-quill/dist/quill.snow.css"; // Import React Quill styles
 import { Button } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 
@@ -18,8 +18,40 @@ const AddTemplate = () => {
   });
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-
+  const modules = {
+    toolbar: [
+      [{ font: [] }, { size: [] }],
+      [
+        { header: "1" },
+        { header: "2" },
+        "bold",
+        "italic",
+        "underline",
+        "strike",
+      ],
+      [
+        { align: [] },
+        { list: "ordered" },
+        { list: "bullet" },
+        "link",
+        "blockquote",
+      ],
+      ["link", "image", "video"],
+      [{ color: [] }, { background: [] }],
+      ["code-block", "blockquote", ],
+      ["clean"],
+    ],
+    clipboard: {
+      matchVisual: false,
+    },
+    history: {
+      delay: 1000,
+      maxStack: 10,
+      userOnly: true,
+    },
+  };
   const navigate = useNavigate();
+
   const onInputChange = (name, value) => {
     setTemplate((prev) => ({
       ...prev,
@@ -27,14 +59,15 @@ const AddTemplate = () => {
     }));
   };
 
-  const handleEditorChange = (event, editor) => {
-    const data = editor.getData();
+  // const [editorValue, setEditorValue] = useState("");
+
+  const handleEditorChange = (value) => {
+    console.log("Editor Content:", value);
     setTemplate((prevTemplate) => ({
       ...prevTemplate,
-      template_design: data,
+      template_design: value,
     }));
   };
-
   const onSubmit = async (e) => {
     e.preventDefault();
     setIsButtonDisabled(true);
@@ -90,75 +123,6 @@ const AddTemplate = () => {
         </div>
         <hr />
 
-        {/* <form
-          id="dowRecp"
-          autoComplete="off"
-          onSubmit={onSubmit}
-          className="w-full max-w-7xl rounded-lg mx-auto p-6 space-y-8"
-        >
-          <div className="grid grid-cols-1 p-4 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div>
-              <FormLabel required>Template Name</FormLabel>
-              <input
-                type="text"
-                name="template_name"
-                value={template.template_name}
-                onChange={(e) => onInputChange(e.target.name, e.target.value)}
-                className={inputClass}
-                required
-              />
-            </div>
-            <div>
-              <FormLabel required>Subject</FormLabel>
-              <input
-                name="template_subject"
-                type="text"
-                required
-                value={template.template_subject}
-                onChange={(e) => onInputChange(e.target.name, e.target.value)}
-                className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-500 border-green-500 "
-              />
-            </div>
-            <div>
-              <FormLabel required>Template URL</FormLabel>
-              <input
-                name="template_url"
-                value={template.template_url}
-                onChange={(e) => onInputChange(e.target.name, e.target.value)}
-                type="text"
-                required
-                className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-500 border-green-500 "
-              />
-            </div>
-          </div>
-          <div className="h-30 w-full">
-            <FormLabel required>Template Design</FormLabel>
-            <CKEditor
-              editor={ClassicEditor}
-              data={template.template_design}
-              onChange={handleEditorChange}
-              name="template_design"
-            />
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:justify-center items-center gap-4">
-            <Button
-              className="w-36 text-white bg-blue-600 !important hover:bg-violet-400 hover:animate-pulse"
-              type="submit"
-              disabled={isButtonDisabled}
-            >
-              {isButtonDisabled ? "Submitting..." : "Submit"}
-            </Button>
-            <Button
-              className="w-36 text-white bg-red-600 !important hover:bg-violet-400 hover:animate-pulse"
-              onClick={() => {
-                navigate("/templates");
-              }}
-            >
-              Back{" "}
-            </Button>
-          </div>
-        </form> */}
         <form
           autoComplete="off"
           onSubmit={onSubmit}
@@ -202,25 +166,23 @@ const AddTemplate = () => {
           </div>
           <div className="editor-container">
             <FormLabel required>Template Design</FormLabel>
-            <CKEditor
-              editor={ClassicEditor}
-              data={template.template_design || ""}
-              onChange={handleEditorChange}
+            <ReactQuill
+              value={template.template_design}
               name="template_design"
-              config={{
-                toolbar: {
-                  shouldNotGroupWhenFull: true,
-                },
-              }}
+              onChange={handleEditorChange}
+              modules={modules}
+              theme="snow"
+              placeholder="Type your content here..."
             />
           </div>
+
           <div className="flex flex-col sm:flex-row sm:justify-center items-center gap-4">
             <Button
               className="w-36 text-white bg-blue-600"
               type="submit"
               disabled={isButtonDisabled}
             >
-              {isButtonDisabled ? "SUbmitting..." : "Submit"}
+              {isButtonDisabled ? "Submitting..." : "Submit"}
             </Button>
             <Button
               className="w-36 text-white bg-red-600"
@@ -233,14 +195,14 @@ const AddTemplate = () => {
       </div>
       <style>
         {`
-          .editor-container .ck-editor__editable {
+          .editor-container .ql-editor {
             min-height: 20rem;
             max-height: 40rem;
             overflow-y: auto;
             overflow-x: auto;
           }
           @media (max-width: 768px) {
-            .editor-container .ck-editor__editable {
+            .editor-container .ql-editor {
               min-height: 15rem;
               max-height: 30rem;
             }

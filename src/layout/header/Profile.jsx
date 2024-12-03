@@ -17,9 +17,9 @@ import { IconMail, IconUser, IconCircleX } from "@tabler/icons-react";
 import Logout from "../../components/Logout";
 import axios from "axios";
 import BASE_URL from "../../base/BaseUrl";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { IconInfoOctagon } from "@tabler/icons-react";
-
+import SelectInput from "../../components/common/SelectInput";
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = React.useState(null);
   const [openModal, setOpenModal] = React.useState(false);
@@ -27,15 +27,41 @@ const Profile = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [openDialog1, setOpenDialog1] = useState(false);
-  const [firstName, setFirstName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [state, setState] = useState([]);
+  // const [oldPassword, setOldPassword] = useState("");
+  // const [newPassword, setNewPassword] = useState("");
+  // const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const location = useLocation();
+  const [profile, setProfile] = useState({
+    name: "",
+    email: "",
+    mobile: "",
+    address: "",
+    state: "",
+    pincode: "",
+  });
+  const [password, setPassword] = useState({
+    username: "",
+    password: "",
+    old_password: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProfile((prevProfile) => ({
+      ...prevProfile,
+      [name]: value,
+    }));
+  };
+  const handleChangePassword = (e) => {
+    const { name, value } = e.target;
+    setPassword((prevPassword) => ({
+      ...prevPassword,
+      [name]: value,
+    }));
+  };
   const getData = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/panel-fetch-profile`, {
@@ -45,32 +71,38 @@ const Profile = () => {
       });
 
       console.log("API response:", res.data);
-      setFirstName(res.data.profile.name || "");
-      setPhone(res.data.profile.mobile || "");
-      setEmail(res.data.profile.email || "");
+      setProfile(res.data.profile);
     } catch (error) {
       console.error("Failed to fetch profile:", error);
       toast.error("Failed to load profile data");
     }
   };
+  const getStateData = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/panel-fetch-state`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
+      setState(res.data.state || []);
+    } catch (error) {
+      console.error("Failed to fetch profile:", error);
+    }
+  };
   const onUpdateProfile = async (e) => {
     e.preventDefault();
-    if (!firstName) {
-      toast.error("Enter Full Name");
-      return;
-    }
-    if (!phone || phone.length !== 10) {
-      toast.error("Enter a valid 10-digit Mobile Number");
-      return;
-    }
-    if (!email) {
-      toast.error("Enter Email Id");
-      return;
-    }
+
     setIsButtonDisabled(true);
 
-    const data = { mobile: firstName, phone: phone };
+    const data = {
+      name: profile.name,
+      email: profile.email,
+      mobile: profile.mobile,
+      address: profile.address,
+      state: profile.state,
+      pincode: profile.pincode,
+    };
 
     try {
       const res = await axios.post(`${BASE_URL}/panel-update-profile`, data, {
@@ -96,39 +128,24 @@ const Profile = () => {
 
   const onChangePassword = async (e) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      toast.error("Passwords don't match");
-      return;
-    }
-    if (oldPassword === newPassword) {
-      toast.error("Same Old Password is not allowed");
-      return;
-    }
 
     const data = {
-      old_password: oldPassword,
-      password: newPassword,
-      confirm_password: confirmPassword,
+      old_password: password.old_password,
+      password: password.password,
       username: localStorage.getItem("username"),
     };
 
     try {
-      await axios.post(`${BASE_URL}/api/change-password`, data, {
+      await axios.post(`${BASE_URL}/panel-change-password`, data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
       toast.success("Password Updated Successfully!");
-      setOldPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
       setOpenDialog1(false);
     } catch (error) {
       console.error("Password change failed:", error);
       toast.error("Please enter valid old password");
-      setOldPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
     }
   };
   const handleClose = () => {
@@ -143,6 +160,7 @@ const Profile = () => {
   const handleopen = () => {
     setOpenDialog(true);
     getData();
+    getStateData();
   };
   const handleClick2 = (event) => {
     setAnchorEl2(event.currentTarget);
@@ -159,7 +177,7 @@ const Profile = () => {
   );
 
   const inputClass =
-    "w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-500 border-green-500";
+    "w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 border-green-500";
 
   return (
     <Box>
@@ -268,17 +286,14 @@ const Profile = () => {
               </div>
 
               <div className="mt-2 p-4 ">
-                <div className="grid grid-cols-1  gap-6 mb-4">
+                <div className="grid grid-cols-2  gap-6 mb-4">
                   <div>
                     <FormLabel required>Full Name</FormLabel>
                     <input
                       required
-                      value={firstName}
-                      onChange={(e) => {
-                        if (validateOnlyText(e.target.value)) {
-                          setFirstName(e.target.value);
-                        }
-                      }}
+                      name="name"
+                      value={profile.name}
+                      onChange={handleChange}
                       className={inputClass}
                     />
                   </div>
@@ -287,27 +302,66 @@ const Profile = () => {
                     <input
                       required
                       maxLength={10}
-                      value={phone}
-                      onChange={(e) => {
-                        if (validateOnlyDigits(e.target.value)) {
-                          setPhone(e.target.value);
-                        }
-                      }}
+                      name="mobile"
+                      value={profile.mobile}
+                      onChange={handleChange}
                       className={inputClass}
                     />
                   </div>
+                </div>
+
+                <div>
+                  <FormLabel required>Address</FormLabel>
+                  <textarea
+                    name="address"
+                    value={profile.address}
+                    onChange={handleChange}
+                    rows="3"
+                    className={inputClass}
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2  gap-6 my-4">
                   <div>
-                    <FormLabel required>Email</FormLabel>
-                    <input
+                    <SelectInput
+                      label="State"
+                      options={state.map((item) => ({
+                        value: item.state_name,
+                        label: item.state_name,
+                      }))}
                       required
-                      value={email}
-                      disabled
-                      onChange={(e) => setEmail(e.target.value)}
-                      // className={inputClass}
-                      className=" cursor-not-allowed w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-500 border-green-500"
+                      value={profile.state || ""}
+                      name="state"
+                      onChange={(e) => setState(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <FormLabel required>Pincode</FormLabel>
+                    <input
+                      name="pincode"
+                      type="tel"
+                      maxLength={6}
+                      value={profile.pincode}
+                      onChange={handleChange}
+                      className={inputClass}
+                      required
                     />
                   </div>
                 </div>
+                <div>
+                  <FormLabel required>Email</FormLabel>
+                  <input
+                    required
+                    name="email"
+                    value={profile.email}
+                    disabled
+                    onChange={handleChange}
+                    className=" cursor-not-allowed w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-500 border-green-500"
+                  />
+                </div>
+
                 <div className="mt-5 flex justify-center">
                   <button
                     disabled={isButtonDisabled}
@@ -359,8 +413,9 @@ const Profile = () => {
                     <input
                       required
                       type="password"
-                      value={oldPassword}
-                      onChange={(e) => setOldPassword(e.target.value)}
+                      name="old_password"
+                      value={password.old_password}
+                      onChange={handleChangePassword}
                       className={inputClass}
                     />
                   </div>
@@ -369,12 +424,13 @@ const Profile = () => {
                     <input
                       required
                       type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
+                      name="password"
+                      value={password.password}
+                      onChange={handleChangePassword}
                       className={inputClass}
                     />
                   </div>
-                  <div>
+                  {/* <div>
                     <FormLabel required>Confirm Password</FormLabel>
                     <input
                       required
@@ -383,7 +439,7 @@ const Profile = () => {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       className={inputClass}
                     />
-                  </div>
+                  </div> */}
                 </div>
                 <div className="mt-5 flex justify-center">
                   <button

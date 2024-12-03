@@ -4,19 +4,18 @@ import axios from "axios";
 import BASE_URL from "../../../base/BaseUrl";
 import toast from "react-hot-toast";
 import { Button } from "@mantine/core";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FormControl, Select, MenuItem, OutlinedInput } from "@mui/material";
 import SelectInput from "../../../components/common/SelectInput";
-
-const groupNames = [
-  { value: "group1", label: "Group 1" },
-  { value: "group2", label: "Group 2" },
-  { value: "group3", label: "Group 3" },
-  { value: "group4", label: "Group 4" },
-  { value: "group5", label: "Group 5" },
-  { value: "group6", label: "Group 6" },
-  { value: "group7", label: "Group 7" },
-  { value: "group8", label: "Group 8" },
+const status = [
+  {
+    value: "Active",
+    label: "Active",
+  },
+  {
+    value: "Inactive",
+    label: "Inactive",
+  },
 ];
 
 const EditContact = () => {
@@ -28,17 +27,20 @@ const EditContact = () => {
     contact_group: [],
     contact_state: "",
     contact_pincode: "",
+    contact_status: "",
   });
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const navigate = useNavigate();
   const [mobileError, setMobileError] = useState("");
-
+  const [group, setGroup] = useState([]);
+  const [state, setState] = useState([]);
+  const { id } = useParams();
   const handleGroupChange = (event) => {
     const { value } = event.target;
     setContact((prev) => ({
       ...prev,
-      contact_group: value,
+      contact_group: Array.isArray(value) ? value : [],
     }));
   };
 
@@ -55,28 +57,62 @@ const EditContact = () => {
   const getContactData = async () => {
     try {
       const res = await axios.get(
-        `${BASE_URL}/panel-fetch-template-by-id/${id}`,
+        `${BASE_URL}/panel-fetch-contact-by-id/${id}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
 
-      console.log("API response:", res.data);
-      if (res.data?.template) {
-        setContact(res.data.contact);
-      } else {
-        throw new Error("Template data is missing");
-      }
+      const contactData = res.data.contact;
+      const contactGroup = Array.isArray(contactData.contact_group)
+        ? contactData.contact_group
+        : contactData.contact_group
+        ? [contactData.contact_group]
+        : [];
+
+      setContact({
+        ...contactData,
+        contact_group: contactGroup, // Set contact_group as an array
+      });
+    } catch (error) {
+      console.error("Failed to fetch contact:", error);
+      toast.error("Failed to load contact data");
+    }
+  };
+  const getGroupData = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/panel-fetch-group`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      setGroup(res.data.group);
+    } catch (error) {
+      console.error("Failed to fetch group:", error);
+    }
+  };
+
+  const getStateData = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/panel-fetch-state`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      setState(res.data.state || []);
     } catch (error) {
       console.error("Failed to fetch profile:", error);
-      toast.error("Failed to load profile data");
     }
   };
   useEffect(() => {
     getContactData();
-  }, []);
+    getStateData();
+    getGroupData();
+  }, [id]);
   const onSubmit = async (e) => {
     e.preventDefault();
     setIsButtonDisabled(true);
@@ -95,15 +131,16 @@ const EditContact = () => {
       contact_group: contact.contact_group,
       contact_pincode: contact.contact_pincode,
       contact_state: contact.contact_state,
+      contact_status: contact.contact_status,
     };
 
     try {
-      await axios.post(`${BASE_URL}/panel-create-group`, data, {
+      await axios.put(`${BASE_URL}/panel-update-contact/${id}`, data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      toast.success("Contact added successfully!");
+      toast.success("Contact Updated successfully!");
       navigate("/Contact");
       setContact({
         contact_name: "",
@@ -137,7 +174,7 @@ const EditContact = () => {
       <div className="bg-[#FFFFFF] p-4 rounded-lg">
         <div className="sticky top-0 p-2 mb-4 border-b-2 border-green-500 rounded-lg bg-[#E1F5FA]">
           <h2 className="px-5 text-black text-lg flex items-center gap-2">
-            Add Contact
+            Edit Contact
           </h2>
         </div>
         <form
@@ -172,15 +209,16 @@ const EditContact = () => {
                 <p className="text-red-500 text-sm mt-1">{mobileError}</p>
               )}
             </div>
-
+            {/* 
             <FormControl sx={{ width: "100%" }}>
               <FormLabel required>Group Name</FormLabel>
               <Select
                 labelId="demo-group-name-label"
                 id="demo-group-name"
+                name="contact_group"
                 multiple
-                value={contact.contact_group} // Now it's an array
-                onChange={handleGroupChange} // Handles multi-selection
+                value={contact.contact_group}
+                onChange={handleGroupChange}
                 input={
                   <OutlinedInput
                     sx={{
@@ -198,9 +236,46 @@ const EditContact = () => {
                   />
                 }
               >
-                {groupNames.map((group) => (
-                  <MenuItem key={group.value} value={group.value}>
-                    {group.label}
+                {group.map((group) => (
+                  <MenuItem key={group.id} value={group.id}>
+                    {group.group_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl> */}
+            <FormControl sx={{ width: "100%" }}>
+              <FormLabel required>Group Name</FormLabel>
+              <Select
+                labelId="demo-group-name-label"
+                id="demo-group-name"
+                name="contact_group"
+                multiple
+                value={
+                  Array.isArray(contact.contact_group)
+                    ? contact.contact_group
+                    : []
+                }
+                onChange={handleGroupChange}
+                input={
+                  <OutlinedInput
+                    sx={{
+                      width: "100%",
+                      fontSize: "0.75rem",
+                      border: "1px solid #4caf50",
+                      borderRadius: "8px",
+                      "&:focus": {
+                        outline: "none",
+                        borderColor: "#42a5f5",
+                        boxShadow: "0 0 0 1px rgba(66, 165, 245, 0.5)",
+                      },
+                    }}
+                    size="small"
+                  />
+                }
+              >
+                {group.map((group) => (
+                  <MenuItem key={group.id} value={group.id}>
+                    {group.group_name}
                   </MenuItem>
                 ))}
               </Select>
@@ -235,7 +310,10 @@ const EditContact = () => {
             <div>
               <SelectInput
                 label="State"
-                options={groupNames}
+                options={state.map((item) => ({
+                  value: item.state_name,
+                  label: item.state_name,
+                }))}
                 required
                 value={contact.contact_state || ""}
                 name="contact_state"
@@ -254,9 +332,17 @@ const EditContact = () => {
                 className={inputClass}
                 required
               />
-              {mobileError && (
-                <p className="text-red-500 text-sm mt-1">{mobileError}</p>
-              )}
+            </div>
+
+            <div>
+              <SelectInput
+                label="Status"
+                options={status}
+                required
+                value={contact.contact_status || ""}
+                name="contact_status"
+                onChange={(e) => onInputChange(e.target.name, e.target.value)}
+              />
             </div>
           </div>
           <div className="flex flex-col sm:flex-row sm:justify-center items-center gap-4">

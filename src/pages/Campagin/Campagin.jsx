@@ -11,11 +11,12 @@ import {
 import { Box, Button, Center, Flex, Loader, Text } from "@mantine/core";
 import { IconEdit, IconEye, IconReceipt } from "@tabler/icons-react";
 import { IconTrash } from "@tabler/icons-react";
+import { useNavigate } from "react-router-dom";
 
 const Campagin = () => {
   const [campagindata, setCampaginData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const naviagte = useNavigate();
   const fetchCampaginData = async () => {
     setIsLoading(true);
     try {
@@ -40,10 +41,10 @@ const Campagin = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "index", 
+        accessorKey: "index",
         header: "#",
-        size: 50, 
-        Cell: ({ row }) => row.index + 1, 
+        size: 50,
+        Cell: ({ row }) => row.index + 1,
       },
       {
         accessorKey: "indicomp_full_name",
@@ -117,7 +118,7 @@ const Campagin = () => {
           <Flex gap="sm">
             <MRT_GlobalFilterTextInput table={table} />
             <MRT_ToggleFiltersButton table={table} />
-            <Button
+            {/* <Button
               onClick={handleActivate}
               sx={{
                 backgroundColor: "green !important",
@@ -128,8 +129,13 @@ const Campagin = () => {
               }}
             >
               Export
-            </Button>
-            <Button className="w-36 text-white bg-blue-600 !important hover:bg-violet-400 hover:animate-pulse">
+            </Button> */}
+            <Button
+              className="w-36 text-white bg-blue-600 !important hover:bg-violet-400 hover:animate-pulse"
+              onClick={() => {
+                naviagte("/campaigns/add");
+              }}
+            >
               Add
             </Button>
           </Flex>

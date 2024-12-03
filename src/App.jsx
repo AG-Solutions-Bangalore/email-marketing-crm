@@ -83,6 +83,8 @@ import EditContact from "./pages/Contact/Contact/EditContact";
 import Group from "./pages/Contact/Group/Group";
 import AddGroup from "./pages/Contact/Group/AddGroup";
 import EditGroup from "./pages/Contact/Group/EditGroup";
+import ContactImport from "./pages/Contact/Contact/ContactImport";
+import AddCampagin from "./pages/Campagin/AddCampaign";
 const App = () => {
   return (
     <>
@@ -107,6 +109,7 @@ const App = () => {
         <Route path="/templates/add" element={<AddTemplate />} />
         <Route path="/templates/edit/:id" element={<EditTemplate />} />
         <Route path="/campaigns" element={<Campagin />} />
+        <Route path="/campaigns/add" element={<AddCampagin />} />
         <Route path="/report/read" element={<ReportRead />} />
         <Route path="/report/unsubscribe" element={<ReportUnsubscribe />} />
         <Route path="/report/visted" element={<ReportVisted />} />
@@ -114,12 +117,13 @@ const App = () => {
         <Route path="/Contact" element={<Contact />} />
         <Route path="/Contact/add" element={<AddContact />} />
         <Route path="/Contact/edit/:id" element={<EditContact />} />
+        <Route path="/Contact/import" element={<ContactImport />} />
 
         {/* //group */}
 
         <Route path="/group" element={<Group />} />
         <Route path="/group/add" element={<AddGroup />} />
-        <Route path="/group/edit/:id" element={<EditGroup />} /> 
+        <Route path="/group/edit/:id" element={<EditGroup />} />
 
         {/* //////////////////// */}
         {/* //superRecepit */}

@@ -38,16 +38,14 @@ const SignIn = () => {
 
     try {
       const res = await axios.post(`${BASE_URL}/panel-login`, formData);
-
+      console.log(res);
       if (res.status === 200) {
         const token = res.data.UserInfo?.token;
 
         // Store user information in localStorage
-        localStorage.setItem("id", res.data.UserInfo.user.user_type_id);
-        localStorage.setItem("name", res.data.UserInfo.user.first_name);
+        localStorage.setItem("id", res.data.UserInfo.user.id);
         localStorage.setItem("username", res.data.UserInfo.user.name);
-        localStorage.setItem("chapter_id", res.data.UserInfo.user.chapter_id);
-        localStorage.setItem("user_type_id", res.data.UserInfo.user.user_type_id);
+        localStorage.setItem("user_type_id", res.data.UserInfo.user.user_type);
 
         if (token) {
           localStorage.setItem("token", token);
@@ -88,7 +86,10 @@ const SignIn = () => {
           </div>
 
           {/* Title */}
-          <Typography variant="h4" className="text-center font-bold mb-4 text-blue-gray-800">
+          <Typography
+            variant="h4"
+            className="text-center font-bold mb-4 text-blue-gray-800"
+          >
             Sign into Your Account
           </Typography>
 
@@ -131,7 +132,10 @@ const SignIn = () => {
 
           {/* Forgot Password Link */}
           <div className="text-right mt-4">
-            <Link className="text-sm text-gray-700 hover:text-blue-600" to="/forget-password">
+            <Link
+              className="text-sm text-gray-700 hover:text-blue-600"
+              to="/forget-password"
+            >
               Forgot password?
             </Link>
           </div>
