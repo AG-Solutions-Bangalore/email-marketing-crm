@@ -15,7 +15,7 @@ const AppProvider = ({ children }) => {
 
   const checkPanelStatus = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/check-status`);
+      const response = await axios.get(`${BASE_URL}/panel-check-status`);
       const datas = await response.data;
       setIsPanelUp(datas);
       if (datas?.success) {
@@ -28,21 +28,21 @@ const AppProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    const fetchYearData = async () => {
-      try {
-        const response = await axios.get(`${BASE_URL}/api/fetch-year`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setCurrentYear(response.data?.year?.current_year || "");
-      } catch (error) {
-        console.error("Error fetching year data:", error);
-      }
-    };
-    fetchYearData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchYearData = async () => {
+  //     try {
+  //       const response = await axios.get(`${BASE_URL}/api/fetch-year`, {
+  //         headers: {
+  //           Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //         },
+  //       });
+  //       setCurrentYear(response.data?.year?.current_year || "");
+  //     } catch (error) {
+  //       console.error("Error fetching year data:", error);
+  //     }
+  //   };
+  //   fetchYearData();
+  // }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -143,6 +143,20 @@ const AppProvider = ({ children }) => {
           "/faq",
           "/team",
           "/notification",
+
+          //template
+
+          "/templates",
+
+          "/templates/add",
+          "/campaigns",
+          "/report/read",
+          "/report/unsubscribe",
+          "/report/visted",
+          "/report/campaign",
+          //contact
+          "/Contact",
+          "/Contact/edit",
         ];
 
         const isAllowedPath = allowedPath.some((path) =>

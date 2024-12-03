@@ -1,17 +1,17 @@
 import { styled } from "@mui/material";
 
 import { Link } from "react-router-dom";
-import logosmall from "../../../assets/logos/fts1.png";
-import logstrucn from "../../../assets/logos/fts_wm.png";
+import logosmall from "../../../assets/receipt/ag_logo.png";
+import logstrucn from "../../../assets/profile/user_1.png";
 const LinkStyled = styled(Link)(() => ({
   height: "63px",
-  width: "180px",
+  width: "220px",
   overflow: "hidden",
   display: "block",
 }));
 const LargeLinkStyled = styled(Link)(() => ({
   height: "63px",
-  width: "63px",
+  width: "70px",
   overflow: "hidden",
   display: "block",
 }));

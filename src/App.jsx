@@ -9,7 +9,7 @@ import Profile from "./pages/profile/Profile";
 import ChangePassword from "./pages/profile/ChangePassword";
 import DonorList from "./pages/donor/fullList/DonorList";
 import AddIndivisual from "./pages/donor/fullList/AddIndivisual";
-import { ToastContainer } from "react-toastify";
+import toast, { Toaster } from "react-hot-toast";
 import "react-toastify/dist/ReactToastify.css";
 import DowloadRecpit from "./pages/download/DownloadReceipts/DownloadReceipts";
 import Donor from "./pages/download/Donor/Donor";
@@ -69,17 +69,50 @@ import SchoolAllotLetter from "./pages/Students/SchoolAllot/SchoolAllotLetter";
 import RepeatDonors from "./pages/Students/RepeatDonors/RepeatDonors";
 import AllotedList from "./pages/Students/RepeatDonors/AllotedList";
 import RecepitSuper from "./pages/RecepitSuper/RecepitSuper";
+import Template from "./pages/Template/Template";
+import Campagin from "./pages/Campagin/Campagin";
+import ReportRead from "./pages/Report/ReportRead/ReportRead";
+import ReportUnsubscribe from "./pages/Report/ReportUnsubscribe/Reportunsubscribe";
+import ReportVisted from "./pages/Report/ReportVisited/ReportVisted";
+import ReportCampagin from "./pages/Report/ReportCampagin/ReportCampagin";
+import AddTemplate from "./pages/Template/AddTemplate";
+import EditTemplate from "./pages/Template/EditTemplate";
+import Contact from "./pages/Contact/Contact/Contact";
+import AddContact from "./pages/Contact/Contact/AddContact";
+import EditContact from "./pages/Contact/Contact/EditContact";
 const App = () => {
   return (
     <>
-      <ToastContainer />
+      <Toaster
+        toastOptions={{
+          success: { style: { background: "#10B981", color: "#fff" } },
+          error: { style: { background: "#EF4444", color: "#fff" } },
+        }}
+        position="top-right"
+        reverseOrder={false}
+      />
+
       <Routes>
         <Route path="/" element={<SignIn />} />
         <Route path="/register" element={<SIgnUp />} />
         <Route path="/forget-password" element={<ForgetPassword />} />
         <Route path="/home" element={<Home />} />
         <Route path="/maintenance" element={<Maintenance />} />
+        {/* //EMAIL MARKETING/////// */}
 
+        <Route path="/templates" element={<Template />} />
+        <Route path="/templates/add" element={<AddTemplate />} />
+        <Route path="/templates/edit/:id" element={<EditTemplate />} />
+        <Route path="/campaigns" element={<Campagin />} />
+        <Route path="/report/read" element={<ReportRead />} />
+        <Route path="/report/unsubscribe" element={<ReportUnsubscribe />} />
+        <Route path="/report/visted" element={<ReportVisted />} />
+        <Route path="/report/campaign" element={<ReportCampagin />} />
+        <Route path="/Contact" element={<Contact />} />
+        <Route path="/Contact/add" element={<AddContact />} />
+        <Route path="/Contact/edit/:id" element={<EditContact/>} />
+
+        {/* //////////////////// */}
         {/* //superRecepit */}
         <Route path="/recepit-sup" element={<RecepitSuper />} />
 

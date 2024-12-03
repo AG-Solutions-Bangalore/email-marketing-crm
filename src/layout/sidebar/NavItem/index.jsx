@@ -15,29 +15,33 @@ export default function NavItem({
   pathDirect,
   hideMenu,
   isCollapsed,
+  currentOpenItem,
+  setCurrentOpenItem,
 }) {
   const Icon = item.icon;
   const theme = useTheme();
   const itemIcon = <Icon stroke={1.5} size="1.3rem" />;
 
-  const [isExpanded, setIsExpanded] = React.useState(() => {
-    if (item?.subItems) {
-      const savedState = localStorage.getItem(`menu-${item.id}`);
-      const isCurrentPathInSubItems = item.subItems.some(
-        (subItem) => subItem.href === pathDirect
-      );
-      return savedState ? savedState === "true" : isCurrentPathInSubItems;
-    }
-    return false;
-  });
-  React.useEffect(() => {
-    if (item?.subItems) {
-      localStorage.setItem(`menu-${item.id}`, isExpanded);
-    }
-  }, [isExpanded, item?.id]);
+  // const [isExpanded, setIsExpanded] = React.useState(() => {
+  //   if (item?.subItems) {
+  //     const savedState = localStorage.getItem(`menu-${item.id}`);
+  //     const isCurrentPathInSubItems = item.subItems.some(
+  //       (subItem) => subItem.href === pathDirect
+  //     );
+  //     return savedState ? savedState === "true" : isCurrentPathInSubItems;
+  //   }
+  //   return false;
+  // });
+  console.log(currentOpenItem);
+  const isExpanded = currentOpenItem === item?.id;
+  // React.useEffect(() => {
+  //   if (item?.subItems) {
+  //     localStorage.setItem(`menu-${item.id}`, isExpanded);
+  //   }
+  // }, [isExpanded, item?.id]);
 
   const handleToggle = () => {
-    setIsExpanded(!isExpanded);
+    setCurrentOpenItem(!isExpanded ? item.id : "");
   };
 
   const ListItemStyled = styled(ListItemButton)(() => ({
