@@ -55,99 +55,8 @@ const AppProvider = ({ children }) => {
       if (token) {
         const allowedPath = [
           "/home",
-          "/form",
-          "/profile",
-          "/change-password",
-          //superrecepit
-          "/recepit-sup",
-          //guidebook
-          "/manualguide-book",
-          // donor
-          "/donor-list",
-          "/add-indivisual",
-          "/add-company",
-          "/member-list",
-          "/donor-view",
-          "/receipt-details",
-          "/receipt-list",
-          "/donor-edit",
-          "/receipt-view",
-          "/viewer-list",
-          "/add-viewer",
-          "/edit-viewer",
-          "/duplicate-list",
-          "/create-receipts",
-          "/duplicate-edit",
-          //master
-          "/master/chapters",
-          "/edit-chapter",
-          "/edit-datasource",
-          "/master/states",
-          "/master/designation",
-          "/master/expensive-type",
-          "/master/faqList",
-          "/view-chapter",
-          "/view-school",
-          //chapters
-          "/chapter",
-          "/chapter/view-shool",
-          //datasoucre
-          "/datasource",
-          // receipt
-          "/receipt-list",
-          "/receipt-edit",
-          "/view-receipts",
-          ///downloads
-          "/download/receipts",
-          "/download/donor",
-          "/download/school",
-          "/download/ots",
-          "/download/team",
-          "/download/allrecepit",
-          // REPORT
-          "/report/donorsummary",
-          "/report/recepit",
-          "/report/promoter",
-          "/report/donation",
-          "/report/school",
-          "/report/otg",
-          "/report/payment",
-          "/report/suspense",
-          //report view
-          "/d-summary-view",
-          "/report-donation-view",
-          "/recepit-summary-view",
-          "/recepit-otg-view",
-          "/recepit-nopan-view",
-          "/recepit-group-view",
-          "/report/payment-view",
-          "/report/donor-view",
-          "/report/donorgroup-view",
-          "/report/schoolview",
-          //students
-          "/students-full-list",
-          "/students-to-allot",
-          "/students-report-donor",
-          "/students-full-list-view",
-          "/students-addschoolalot",
-          "/students-schoolallot",
-          "/repeat-donor-allot",
-          "/students-allotedit",
-          "/students-allotview",
-          "/students-report-donor",
-          "/students-allotletter",
-          "/students-schoolallot",
-          "/students-allotedit",
-
-          // other
-          "/faq",
-          "/team",
-          "/notification",
-
           //template
-
           "/templates",
-
           "/templates/add",
           "/campaigns",
           "/campaigns/add",
@@ -156,14 +65,11 @@ const AppProvider = ({ children }) => {
           "/report/unsubscribe",
           "/report/visted",
           "/report/campaign",
-          //contact
           "/Contact",
           "/Contact/edit",
-          //group
           "/group",
           "/group/add",
           "/group/edit",
-          //developer
           "/developer",
         ];
 

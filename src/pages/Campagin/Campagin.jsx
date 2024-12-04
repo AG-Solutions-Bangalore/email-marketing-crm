@@ -12,6 +12,7 @@ import { Box, Button, Center, Flex, Loader, Text } from "@mantine/core";
 import { IconEdit, IconEye, IconReceipt } from "@tabler/icons-react";
 import { IconTrash } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
+import moment from "moment/moment";
 
 const Campagin = () => {
   const [campagindata, setCampaginData] = useState([]);
@@ -55,6 +56,7 @@ const Campagin = () => {
         accessorKey: "campaign_list_date",
         header: "Date",
         size: 150,
+        Cell: ({ value }) => moment(value).format("DD-MM-YYYY"),
       },
       {
         accessorKey: "campaign_list_time",

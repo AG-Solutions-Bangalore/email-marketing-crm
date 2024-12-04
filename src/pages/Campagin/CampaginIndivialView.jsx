@@ -11,6 +11,7 @@ import {
 import { Box, Button, Center, Flex, Loader, Text } from "@mantine/core";
 import { IconArrowBarLeft, IconTrash } from "@tabler/icons-react";
 import { useNavigate, useParams } from "react-router-dom";
+import moment from "moment/moment";
 
 const CampaginIndivialView = () => {
   const [campagindata, setCampaginData] = useState([]);
@@ -52,14 +53,16 @@ const CampaginIndivialView = () => {
         Cell: ({ row }) => row.index + 1,
       },
       {
-        accessorKey: "campaign_list_date",
+        accessorKey: "campaign_date",
         header: "Date",
         size: 150,
+        Cell: ({ value }) => moment(value).format("DD-MM-YYYY"),
       },
+
       {
-        accessorKey: "campaign_list_time",
+        accessorKey: "campaign_time",
         header: "Time",
-        size: 150,
+        size: 100,
       },
       {
         accessorKey: "template_name",
@@ -67,12 +70,12 @@ const CampaginIndivialView = () => {
         size: 150,
       },
       {
-        accessorKey: "group_name",
+        accessorKey: "campaign_individual",
         header: "Group/Individual",
         size: 50,
       },
       {
-        accessorKey: "campaign_list_status",
+        accessorKey: "campaign_status",
         header: "Status",
         size: 50,
       },

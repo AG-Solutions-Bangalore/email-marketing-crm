@@ -39,12 +39,12 @@ const EditContact = () => {
 
   const handleGroupChange = (event) => {
     const { value } = event.target;
-    console.log("start1", value, "end1");
+    // console.log("start1", value, "end1");
 
     const stringValues = Array.isArray(value)
       ? value.map((item) => String(item))
       : String(value);
-    console.log("start", stringValues, "end");
+    // console.log("start", stringValues, "end");
     setContact((prev) => ({
       ...prev,
       contact_group: stringValues,

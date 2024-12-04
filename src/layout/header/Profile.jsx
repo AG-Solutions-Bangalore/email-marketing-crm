@@ -70,7 +70,7 @@ const Profile = () => {
         },
       });
 
-      console.log("API response:", res.data);
+      // console.log("API response:", res.data);
       setProfile(res.data.profile);
     } catch (error) {
       console.error("Failed to fetch profile:", error);
@@ -111,10 +111,10 @@ const Profile = () => {
         },
       });
       if (res.status === 200) {
-        console.log(res.status, "satus");
-        console.log("start");
+        // console.log(res.status, "satus");
+        // console.log("start");
         toast.success("Profile Updated Successfully!");
-        console.log("end");
+        // console.log("end");
 
         handleClose();
       }
@@ -235,16 +235,6 @@ const Profile = () => {
             <IconMail width={20} />
           </ListItemIcon>
           <ListItemText>Change Password</ListItemText>
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            navigate("/manualguide-book");
-          }}
-        >
-          <ListItemIcon>
-            <IconInfoOctagon width={20} />
-          </ListItemIcon>
-          <ListItemText>Help</ListItemText>
         </MenuItem>
 
         <Box mt={1} py={1} px={2}>

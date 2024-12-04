@@ -37,7 +37,7 @@ const AddCampagin = () => {
 
   const handleGroupChange = (event) => {
     const { value } = event.target;
-    console.log(value);
+    // console.log(value);
     setCampagin((prev) => ({
       ...prev,
       campaign_list_group: value, // Store the selected groups as an array
@@ -83,7 +83,7 @@ const AddCampagin = () => {
       campaign_list_individual: campagin.campaign_list_individual,
     };
 
-    console.log(data, "dadattat");
+    // console.log(data, "dadattat");
 
     try {
       await axios.post(`${BASE_URL}/panel-create-campaign`, data, {
