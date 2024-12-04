@@ -21,12 +21,15 @@ const Campagin = () => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`${BASE_URL}/api/fetch-donors`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setCampaginData(response.data?.individualCompanies || []);
+      const response = await axios.get(
+        `${BASE_URL}/panel-fetch-campaign-list`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setCampaginData(response.data?.campaign || []);
     } catch (error) {
       console.error("Error fetching template data:", error);
     } finally {
@@ -49,48 +52,48 @@ const Campagin = () => {
         Cell: ({ row }) => row.index + 1,
       },
       {
-        accessorKey: "indicomp_full_name",
+        accessorKey: "campaign_list_date",
         header: "Date",
         size: 150,
       },
       {
-        accessorKey: "indicomp_full_name",
+        accessorKey: "campaign_list_time",
         header: "Time",
         size: 150,
       },
       {
-        accessorKey: "indicomp_full_name",
+        accessorKey: "template_name",
         header: "Template Name",
         size: 150,
       },
       {
-        accessorKey: "indicomp_type",
+        accessorKey: "group_name",
         header: "Group/Individual",
         size: 50,
       },
       {
-        accessorKey: "indicomp_mobile_phone",
+        accessorKey: "campaign_list_status",
         header: "Status",
         size: 50,
       },
-      {
-        id: "action",
-        header: "Action",
-        size: 50,
-        enableHiding: false,
-        Cell: ({ row }) => (
-          <Flex gap="xs">
-            <IconEye
-              className="cursor-pointer text-blue-600 hover:text-blue-800"
-              title="Edit"
-            />
-            <IconTrash
-              className="cursor-pointer text-blue-600 hover:text-red-800"
-              title="View"
-            />
-          </Flex>
-        ),
-      },
+      // {
+      //   id: "action",
+      //   header: "Action",
+      //   size: 50,
+      //   enableHiding: false,
+      //   Cell: ({ row }) => (
+      //     <Flex gap="xs">
+      //       <IconEye
+      //         className="cursor-pointer text-blue-600 hover:text-blue-800"
+      //         title="Edit"
+      //       />
+      //       <IconTrash
+      //         className="cursor-pointer text-blue-600 hover:text-red-800"
+      //         title="View"
+      //       />
+      //     </Flex>
+      //   ),
+      // },
     ],
     []
   );

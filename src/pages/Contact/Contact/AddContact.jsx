@@ -29,11 +29,11 @@ const AddContact = () => {
     const { value } = event.target;
     setContact((prev) => ({
       ...prev,
-      contact_group: value, // Store the selected groups as an array
+      contact_group: value, 
     }));
   };
 
-  const validateOnlyDigits = (inputtxt) => /^\d*$/.test(inputtxt); // Simplified validation
+  const validateOnlyDigits = (inputtxt) => /^\d*$/.test(inputtxt); 
 
   const onInputChange = (name, value) => {
     if (name === "contact_mobile" && validateOnlyDigits(value)) {

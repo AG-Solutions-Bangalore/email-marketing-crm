@@ -48,7 +48,7 @@ const EditContact = () => {
 
     setContact((prev) => {
       const updatedGroup = prev.contact_group.includes(value)
-        ? prev.contact_group.filter((group) => group !== value) 
+        ? prev.contact_group.filter((group) => group !== value)
         : [...prev.contact_group, value];
 
       return {
@@ -96,19 +96,6 @@ const EditContact = () => {
     } catch (error) {
       console.error("Failed to fetch contact:", error);
       toast.error("Failed to load contact data");
-    }
-  };
-  const getGroupData = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/panel-fetch-group`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      setGroup(res.data.group);
-    } catch (error) {
-      console.error("Failed to fetch group:", error);
     }
   };
 

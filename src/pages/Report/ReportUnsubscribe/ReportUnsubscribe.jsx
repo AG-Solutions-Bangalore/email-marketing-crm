@@ -17,17 +17,25 @@ const ReportUnsubscribe = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchReportUnsubscribeData = async () => {
-    setIsLoading(true);
+    setIsLoading(true); // Start loading
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${BASE_URL}/api/fetch-donors`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      SetReportUnsubscribeData(response.data?.individualCompanies || []);
+      const response = await axios.post(
+        `${BASE_URL}/panel-fetch-unsubscribe-report`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.status == 200) {
+        SetReportUnsubscribeData(response.data.unsubscribe);
+      } else {
+        console.error("Failed to fetch data", response);
+      }
     } catch (error) {
-      console.error("Error fetching template data:", error);
+      console.error("Error fetching unsubscribe report data:", error);
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +88,31 @@ const ReportUnsubscribe = () => {
     ],
     []
   );
+  const handleExport = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios({
+        url: `${BASE_URL}/panel-download-unsubscribe-report`,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob",
+      });
 
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Unsubscribe_list.csv");
+      document.body.appendChild(link);
+      link.click();
+
+      toast.success("Unsubscribe list exported successfully!");
+    } catch (error) {
+      toast.error("Failed to export Unsubscribe list.");
+      console.error("Export error:", error);
+    }
+  };
   const table = useMantineReactTable({
     columns,
     data: reportunsubscribedata,
@@ -105,8 +137,8 @@ const ReportUnsubscribe = () => {
           <Flex gap="sm">
             <MRT_GlobalFilterTextInput table={table} />
             <MRT_ToggleFiltersButton table={table} />
-            {/* <Button
-              onClick={handleActivate}
+            <Button
+              onClick={handleExport}
               sx={{
                 backgroundColor: "green !important",
                 color: "white",
@@ -115,8 +147,8 @@ const ReportUnsubscribe = () => {
                 },
               }}
             >
-              Export
-            </Button> */}
+              Download
+            </Button>
             {/* <Button className="w-36 text-white bg-blue-600 !important hover:bg-violet-400 hover:animate-pulse">
               Add
             </Button> */}
