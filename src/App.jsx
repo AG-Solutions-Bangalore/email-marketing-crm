@@ -71,7 +71,6 @@ import AllotedList from "./pages/Students/RepeatDonors/AllotedList";
 import RecepitSuper from "./pages/RecepitSuper/RecepitSuper";
 import Template from "./pages/Template/Template";
 import Campagin from "./pages/Campagin/Campagin";
-import ReportRead from "./pages/Report/ReportRead/ReportRead";
 import ReportUnsubscribe from "./pages/Report/ReportUnsubscribe/ReportUnsubscribe";
 import ReportVisted from "./pages/Report/ReportVisited/ReportVisted";
 import ReportCampagin from "./pages/Report/ReportCampagin/ReportCampagin";

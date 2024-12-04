@@ -60,9 +60,20 @@ const AddCampagin = () => {
 
     const groupString = campagin.campaign_list_group.join(",");
     const formattedDate = dayjs(campagin.campaign_list_date).format(
-      "MM/DD/YYYY"
+      "YYYY-MM-DD"
     );
+    const groupSelected = Boolean(groupString); 
+    const individualSelected = Boolean(campagin.campaign_list_individual);
 
+    if (groupSelected && individualSelected) {
+      toast.error("Please select only one option: Group or Individual!");
+      return;
+    }
+
+    if (!groupSelected && !individualSelected) {
+      toast.error("Please select at least one option: Group or Individual!");
+      return;
+    }
     const data = {
       campaign_list_template_id: campagin.campaign_list_template_id,
       campaign_list_subject: campagin.campaign_list_subject,
@@ -116,8 +127,8 @@ const AddCampagin = () => {
         },
       });
 
-      const holidayData = res.data.holiday.map(
-        (holiday) => dayjs(holiday.holiday_date) // Convert API dates to Day.js objects
+      const holidayData = res.data.holiday.map((holiday) =>
+        dayjs(holiday.holiday_date)
       );
       setHolidays(holidayData);
     } catch (error) {
@@ -168,12 +179,7 @@ const AddCampagin = () => {
       console.error("Failed to fetch profile:", error);
     }
   };
-  // useEffect(() => {
-  //   getEmailData();
-  //   getTemplate();
-  //   getGroupData();
-  //   getHolidays();
-  // }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       await Promise.all([
@@ -231,7 +237,7 @@ const AddCampagin = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6">
             <FormControl sx={{ width: "100%" }}>
-              <FormLabel required>Group Name</FormLabel>
+              <FormLabel>Group Name</FormLabel>
               <Select
                 labelId="demo-group-name-label"
                 id="demo-group-name"
@@ -271,7 +277,7 @@ const AddCampagin = () => {
                   value: item.contact_email,
                   label: item.contact_email,
                 }))}
-                required
+                // required
                 value={campagin.campaign_list_individual || ""}
                 name="campaign_list_individual"
                 onChange={(e) => onInputChange(e.target.name, e.target.value)}

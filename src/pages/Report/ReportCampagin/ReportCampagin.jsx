@@ -1,149 +1,156 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../../../layout/Layout";
 import axios from "axios";
 import BASE_URL from "../../../base/BaseUrl";
-import {
-  MantineReactTable,
-  useMantineReactTable,
-  MRT_GlobalFilterTextInput,
-  MRT_ToggleFiltersButton,
-} from "mantine-react-table";
-import { Box, Button, Center, Flex, Loader, Text } from "@mantine/core";
-import { IconEdit, IconEye, IconReceipt } from "@tabler/icons-react";
-import { IconTrash } from "@tabler/icons-react";
+import toast from "react-hot-toast";
+import { Button } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
+import SelectInput from "../../../components/common/SelectInput";
 
 const ReportCampagin = () => {
-  const [reportcampagindata, SetReportCampaginData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const today = new Date();
+  const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-  const fetchReportCampaginData = async () => {
-    setIsLoading(true);
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+  const [campaign , setCampaign] = useState({
+    from_date: formatDate(startOfMonth),
+    to_date: formatDate(today),
+  });
+
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const navigate = useNavigate();
+
+  const onInputChange = (name, value) => {
+    setCampaign((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setIsButtonDisabled(true);
+
+    const data = {
+      from_date: campaign .from_date,
+      to_date: campaign .to_date,
+    };
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${BASE_URL}/api/fetch-donors`, {
+      await axios.post(`${BASE_URL}/panel-fetch-campaign-sent-report`, data, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      SetReportCampaginData(response.data?.individualCompanies || []);
     } catch (error) {
-      console.error("Error fetching template data:", error);
+      toast.error("Error adding campaign!");
+      console.error(error);
     } finally {
-      setIsLoading(false);
+      setIsButtonDisabled(false);
     }
   };
 
-  useEffect(() => {
-    fetchReportCampaginData();
-  }, []);
-
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: "index",
-        header: "#",
-        size: 50,
-        enableColumnFilter: false,
-        enableSorting: false,
-        Cell: ({ row }) => row.index + 1,
-      },
-      {
-        accessorKey: "indicomp_full_name",
-        header: "Date",
-        size: 150,
-      },
-      {
-        accessorKey: "indicomp_full_name",
-        header: "Time",
-        size: 150,
-      },
-      {
-        accessorKey: "indicomp_full_name",
-        header: "Template Name",
-        size: 150,
-      },
-      {
-        accessorKey: "indicomp_full_name",
-        header: "Subject",
-        size: 150,
-      },
-      {
-        accessorKey: "indicomp_full_name",
-        header: "Email",
-        size: 150,
-      },
-    ],
-    []
+  const FormLabel = ({ children, required }) => (
+    <label className="block text-sm font-semibold text-black mb-1">
+      {children}
+      {required && <span className="text-red-500 ml-1">*</span>}
+    </label>
   );
 
-  const table = useMantineReactTable({
-    columns,
-    data: reportcampagindata,
-    enableColumnActions: false,
-    enableStickyHeader: true,
-    enableStickyFooter: true,
-    initialState: { showGlobalFilter: true },
-    mantineTableContainerProps: { sx: { maxHeight: "400px" } },
-    mantineTableContainerProps: { sx: { maxHeight: "400px" } },
-    renderTopToolbar: ({ table }) => {
-      const handleActivate = () => {
-        const selectedRows = table.getSelectedRowModel().flatRows;
-        selectedRows.forEach((row) => {
-          alert(`Activating: ${row.getValue("indicomp_full_name")}`);
-        });
-      };
+  const inputClass =
+    "w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 border-green-500";
 
-      return (
-        <Flex
-          p="md"
-          justify="space-between"
-          sx={{
-            overflowX: "auto",
-            maxWidth: "100%", // Prevents horizontal overflow of the container
-          }}
-          flexWrap="wrap"
-        >
-          <Text size="xl" weight={700}>
-            Campaign Sent
-          </Text>
-          <Flex gap="sm">
-            <MRT_GlobalFilterTextInput table={table} />
-            <MRT_ToggleFiltersButton table={table} />
-            <Button
-              onClick={handleActivate}
-              sx={{
-                backgroundColor: "green !important",
-                color: "white",
-                "&:hover": {
-                  backgroundColor: "red  !important",
-                },
-              }}
-            >
-              Export
-            </Button>
-            {/* <Button className="w-36 text-white bg-blue-600 !important hover:bg-violet-400 hover:animate-pulse">
-              Add
-            </Button> */}
-          </Flex>
-        </Flex>
-      );
-    },
-  });
+  const handleExport = async () => {
+    const data = {
+      from_date: campaign .from_date,
+      to_date: campaign .to_date,
+
+    };
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios({
+        url: `${BASE_URL}/panel-download-campaign-sent-report`,
+        method: "POST",
+        data,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Visted_list.csv");
+      document.body.appendChild(link);
+      link.click();
+
+      toast.success("Visted list exported successfully!");
+    } catch (error) {
+      toast.error("Failed to export Visted list.");
+      console.error("Export error:", error);
+    }
+  };
 
   return (
     <Layout>
-      <Box className="max-w-screen">
-        {isLoading ? (
-          <Center style={{ height: "70vh", flexDirection: "column" }}>
-            <Loader size="lg" variant="dots" color="blue" />
-            <Text mt="md" color="gray" size="lg">
-              Loading, please wait...
-            </Text>
-          </Center>
-        ) : (
-          <MantineReactTable table={table} />
-        )}
-      </Box>
+      <div className="bg-[#FFFFFF] p-4 rounded-lg">
+        <div className="sticky top-0 p-2 mb-4 border-b-2 border-green-500 rounded-lg bg-[#E1F5FA]">
+          <h2 className="px-5 text-black text-lg flex items-center gap-2">
+            Campaign
+          </h2>
+        </div>
+        <form
+          autoComplete="off"
+          onSubmit={onSubmit}
+          className="w-full max-w-7xl mx-auto p-6 space-y-8"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <FormLabel required>From Date</FormLabel>
+              <input
+                type="date"
+                name="from_date"
+                value={campaign .from_date}
+                onChange={(e) => onInputChange(e.target.name, e.target.value)}
+                className={inputClass}
+                required
+              />
+            </div>
+            <div>
+              <FormLabel required>To Date</FormLabel>
+              <input
+                type="date"
+                name="to_date"
+                value={campaign .to_date}
+                onChange={(e) => onInputChange(e.target.name, e.target.value)}
+                className={inputClass}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:justify-center items-center gap-4">
+            <Button
+              className="w-36 text-white bg-blue-600"
+              type="submit"
+              disabled={isButtonDisabled}
+            >
+              {isButtonDisabled ? "View..." : "View"}
+            </Button>
+            <Button
+              type="button"
+              className="w-36 text-white bg-blue-600"
+              onClick={handleExport}
+            >
+              Download
+            </Button>
+          </div>
+        </form>
+      </div>
     </Layout>
   );
 };
