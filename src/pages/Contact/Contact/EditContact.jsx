@@ -36,11 +36,18 @@ const EditContact = () => {
   const [group, setGroup] = useState([]);
   const [state, setState] = useState([]);
   const { id } = useParams();
+
   const handleGroupChange = (event) => {
     const { value } = event.target;
+    console.log("start1", value, "end1");
+
+    const stringValues = Array.isArray(value)
+      ? value.map((item) => String(item))
+      : String(value);
+    console.log("start", stringValues, "end");
     setContact((prev) => ({
       ...prev,
-      contact_group: Array.isArray(value) ? value : [],
+      contact_group: stringValues,
     }));
   };
 
@@ -66,15 +73,13 @@ const EditContact = () => {
       );
 
       const contactData = res.data.contact;
-      const contactGroup = Array.isArray(contactData.contact_group)
-        ? contactData.contact_group
-        : contactData.contact_group
-        ? [contactData.contact_group]
+      const contactGroup = contactData.contact_group
+        ? contactData.contact_group.split(",")
         : [];
 
       setContact({
         ...contactData,
-        contact_group: contactGroup, // Set contact_group as an array
+        contact_group: contactGroup,
       });
     } catch (error) {
       console.error("Failed to fetch contact:", error);
@@ -122,13 +127,14 @@ const EditContact = () => {
       setIsButtonDisabled(false);
       return;
     }
+    const groupString = contact.contact_group.join(",");
 
     const data = {
       contact_name: contact.contact_name,
       contact_mobile: contact.contact_mobile,
       contact_email: contact.contact_email,
       contact_address: contact.contact_address,
-      contact_group: contact.contact_group,
+      contact_group: groupString,
       contact_pincode: contact.contact_pincode,
       contact_state: contact.contact_state,
       contact_status: contact.contact_status,
@@ -248,13 +254,9 @@ const EditContact = () => {
               <Select
                 labelId="demo-group-name-label"
                 id="demo-group-name"
-                name="contact_group"
                 multiple
-                value={
-                  Array.isArray(contact.contact_group)
-                    ? contact.contact_group
-                    : []
-                }
+                name="contact_group"
+                value={contact.contact_group}
                 onChange={handleGroupChange}
                 input={
                   <OutlinedInput
@@ -274,7 +276,7 @@ const EditContact = () => {
                 }
               >
                 {group.map((group) => (
-                  <MenuItem key={group.id} value={group.id}>
+                  <MenuItem key={group.id} value={group.id.toString()}>
                     {group.group_name}
                   </MenuItem>
                 ))}

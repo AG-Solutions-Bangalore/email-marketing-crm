@@ -1,27 +1,24 @@
 import React, { useEffect, useState } from "react";
-import Layout from "../../layout/Layout";
+import Layout from "../../../layout/Layout";
 import axios from "axios";
-import BASE_URL from "../../base/BaseUrl";
+import BASE_URL from "../../../base/BaseUrl";
 import toast from "react-hot-toast";
 import { Button } from "@mantine/core";
-import { useNavigate } from "react-router-dom";
-import {
-  FormControl,
-  Select,
-  MenuItem,
-  OutlinedInput,
-  FormControlLabel,
-  Checkbox,
-} from "@mui/material";
-import SelectInput from "../../components/common/SelectInput";
-import dayjs from "dayjs";
-import {
-  LocalizationProvider,
-  DatePicker,
-} from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { useNavigate, useParams } from "react-router-dom";
+import { FormControl, Select, MenuItem, OutlinedInput } from "@mui/material";
+import SelectInput from "../../../components/common/SelectInput";
+const status = [
+  {
+    value: "Active",
+    label: "Active",
+  },
+  {
+    value: "Inactive",
+    label: "Inactive",
+  },
+];
 
-const AddCampagin = () => {
+const EditContact = () => {
   const [contact, setContact] = useState({
     contact_name: "",
     contact_mobile: "",
@@ -30,24 +27,38 @@ const AddCampagin = () => {
     contact_group: [],
     contact_state: "",
     contact_pincode: "",
-    date: dayjs(),
+    contact_status: "",
   });
-  const [holidays, setHolidays] = useState([]);
+
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const navigate = useNavigate();
   const [mobileError, setMobileError] = useState("");
-  const [state, setState] = useState([]);
   const [group, setGroup] = useState([]);
-
+  const [state, setState] = useState([]);
+  const { id } = useParams();
+  // const handleGroupChange = (event) => {
+  //   const { value } = event.target;
+  //   setContact((prev) => ({
+  //     ...prev,
+  //     contact_group: Array.isArray(value) ? value : [],
+  //   }));
+  // };
   const handleGroupChange = (event) => {
     const { value } = event.target;
-    setContact((prev) => ({
-      ...prev,
-      contact_group: value, // Store the selected groups as an array
-    }));
+
+    setContact((prev) => {
+      const updatedGroup = prev.contact_group.includes(value)
+        ? prev.contact_group.filter((group) => group !== value) 
+        : [...prev.contact_group, value];
+
+      return {
+        ...prev,
+        contact_group: updatedGroup,
+      };
+    });
   };
 
-  const validateOnlyDigits = (inputtxt) => /^\d*$/.test(inputtxt); // Simplified validation
+  const validateOnlyDigits = (inputtxt) => /^\d*$/.test(inputtxt);
 
   const onInputChange = (name, value) => {
     if (name === "contact_mobile" && validateOnlyDigits(value)) {
@@ -57,6 +68,68 @@ const AddCampagin = () => {
     }
   };
 
+  const getContactData = async () => {
+    try {
+      const res = await axios.get(
+        `${BASE_URL}/panel-fetch-contact-by-id/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      const contactData = res.data.contact;
+      // const contactGroup = Array.isArray(contactData.contact_group)
+      //   ? contactData.contact_group
+      //   : contactData.contact_group
+      //   ? [contactData.contact_group]
+      //   : [];
+      const contactGroup = contactData.contact_group
+        ? contactData.contact_group.split(",")
+        : [];
+
+      setContact({
+        ...contactData,
+        contact_group: contactGroup,
+      });
+    } catch (error) {
+      console.error("Failed to fetch contact:", error);
+      toast.error("Failed to load contact data");
+    }
+  };
+  const getGroupData = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/panel-fetch-group`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      setGroup(res.data.group);
+    } catch (error) {
+      console.error("Failed to fetch group:", error);
+    }
+  };
+
+  const getStateData = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/panel-fetch-state`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      setState(res.data.state || []);
+    } catch (error) {
+      console.error("Failed to fetch profile:", error);
+    }
+  };
+  useEffect(() => {
+    getContactData();
+    getStateData();
+    getGroupData();
+  }, [id]);
   const onSubmit = async (e) => {
     e.preventDefault();
     setIsButtonDisabled(true);
@@ -76,15 +149,16 @@ const AddCampagin = () => {
       contact_group: groupString,
       contact_pincode: contact.contact_pincode,
       contact_state: contact.contact_state,
+      contact_status: contact.contact_status,
     };
 
     try {
-      await axios.post(`${BASE_URL}/panel-create-contact`, data, {
+      await axios.put(`${BASE_URL}/panel-update-contact/${id}`, data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      toast.success("Contact added successfully!");
+      toast.success("Contact Updated successfully!");
       navigate("/Contact");
       setContact({
         contact_name: "",
@@ -93,7 +167,7 @@ const AddCampagin = () => {
         contact_address: "",
         contact_state: "",
         contact_pincode: "",
-        contact_group: "",
+        contact_group: [],
       });
     } catch (error) {
       toast.error("Error adding contact!");
@@ -112,67 +186,13 @@ const AddCampagin = () => {
 
   const inputClass =
     "w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 border-green-500";
-  const getHolidays = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/panel-fetch-holiday`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      const holidayData = res.data.holiday.map(
-        (holiday) => dayjs(holiday.holiday_date) // Convert API dates to Day.js objects
-      );
-      setHolidays(holidayData);
-    } catch (error) {
-      console.error("Failed to fetch holidays:", error);
-      toast.error("Failed to load holiday data");
-    }
-  };
-
-  const isDateDisabled = (date) => {
-    return holidays.some((holiday) => holiday.isSame(date, "day"));
-  };
-  const getStateData = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/panel-fetch-state`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      setState(res.data.state || []);
-    } catch (error) {
-      console.error("Failed to fetch profile:", error);
-    }
-  };
-  const getGroupData = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/panel-fetch-group`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      setGroup(res.data.group);
-    } catch (error) {
-      console.error("Failed to fetch profile:", error);
-    }
-  };
-  useEffect(() => {
-    getStateData();
-    getGroupData();
-    getHolidays();
-  }, []);
-
-
 
   return (
     <Layout>
       <div className="bg-[#FFFFFF] p-4 rounded-lg">
         <div className="sticky top-0 p-2 mb-4 border-b-2 border-green-500 rounded-lg bg-[#E1F5FA]">
           <h2 className="px-5 text-black text-lg flex items-center gap-2">
-            Add Campaign
+            Edit Contact
           </h2>
         </div>
         <form
@@ -180,24 +200,24 @@ const AddCampagin = () => {
           onSubmit={onSubmit}
           className="w-full max-w-7xl mx-auto p-6 space-y-8"
         >
-          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
-              <SelectInput
-                label="Template"
-                options={state.map((item) => ({
-                  value: item.state_name,
-                  label: item.state_name,
-                }))}
-                required
-                value={contact.contact_state || ""}
-                name="contact_state"
+              <FormLabel required> Name</FormLabel>
+              <input
+                type="text"
+                name="contact_name"
+                value={contact.contact_name}
                 onChange={(e) => onInputChange(e.target.name, e.target.value)}
+                className={inputClass}
+                required
               />
             </div>
             <div>
-              <FormLabel required>Subject</FormLabel>
+              <FormLabel required>Mobile No</FormLabel>
               <input
                 name="contact_mobile"
+                type="tel"
+                maxLength={10}
                 value={contact.contact_mobile}
                 onChange={(e) => onInputChange(e.target.name, e.target.value)}
                 className={inputClass}
@@ -207,15 +227,52 @@ const AddCampagin = () => {
                 <p className="text-red-500 text-sm mt-1">{mobileError}</p>
               )}
             </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* 
             <FormControl sx={{ width: "100%" }}>
               <FormLabel required>Group Name</FormLabel>
               <Select
                 labelId="demo-group-name-label"
                 id="demo-group-name"
-                multiple
                 name="contact_group"
+                multiple
+                value={contact.contact_group}
+                onChange={handleGroupChange}
+                input={
+                  <OutlinedInput
+                    sx={{
+                      width: "100%",
+                      fontSize: "0.75rem",
+                      border: "1px solid #4caf50",
+                      borderRadius: "8px",
+                      "&:focus": {
+                        outline: "none",
+                        borderColor: "#42a5f5",
+                        boxShadow: "0 0 0 1px rgba(66, 165, 245, 0.5)",
+                      },
+                    }}
+                    size="small"
+                  />
+                }
+              >
+                {group.map((group) => (
+                  <MenuItem key={group.id} value={group.id}>
+                    {group.group_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl> */}
+            <FormControl sx={{ width: "100%" }}>
+              <FormLabel required>Group Name</FormLabel>
+              <Select
+                labelId="demo-group-name-label"
+                id="demo-group-name"
+                name="contact_group"
+                multiple
+                // value={
+                //   Array.isArray(contact.contact_group)
+                //     ? contact.contact_group
+                //     : []
+                // }
                 value={contact.contact_group}
                 onChange={handleGroupChange}
                 input={
@@ -242,11 +299,36 @@ const AddCampagin = () => {
                 ))}
               </Select>
             </FormControl>
-    
 
             <div>
+              <FormLabel required>Email</FormLabel>
+              <input
+                type="email"
+                name="contact_email"
+                value={contact.contact_email}
+                onChange={(e) => onInputChange(e.target.name, e.target.value)}
+                className={inputClass}
+                required
+              />
+            </div>
+          </div>
+          <div>
+            <div>
+              <FormLabel required>Address</FormLabel>
+              <textarea
+                name="contact_address"
+                value={contact.contact_address}
+                onChange={(e) => onInputChange(e.target.name, e.target.value)}
+                rows="3"
+                className={inputClass}
+                required
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2  gap-6">
+            <div>
               <SelectInput
-                label="Contact Individual"
+                label="State"
                 options={state.map((item) => ({
                   value: item.state_name,
                   label: item.state_name,
@@ -257,71 +339,38 @@ const AddCampagin = () => {
                 onChange={(e) => onInputChange(e.target.name, e.target.value)}
               />
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-            <div className="col-span-1">
-              <FormLabel >Holiday</FormLabel>
-          
-              <FormControlLabel
-                control={<Checkbox size="large" />}
-              />
-            </div>
-
-            <div className="col-span-2">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <FormLabel required>Date</FormLabel>
-
-                <DatePicker
-                  value={contact.date}
-                  onChange={(newValue) => onInputChange("date", newValue)}
-                  shouldDisableDate={isDateDisabled}
-                  sx={{ width: "100%" }}
-                  slotProps={{
-                    field: {
-                      size: "small",
-                      sx: {
-                        width: "100%",
-                        border: "1px solid",
-                        borderRadius: "0.375rem",
-                        outline: "none",
-                        "&:focus": {
-                          borderColor: "blue",
-                          boxShadow: "0 0 0 1px rgba(59, 130, 246, 1)",
-                        },
-                        borderColor: "green",
-                        "&:hover": {
-                          borderColor: "green",
-                          boxShadow: "none",
-                        },
-                      },
-                    },
-                  }}
-                  renderInput={(params) => <input {...params.inputProps} />}
-                />
-              </LocalizationProvider>
-            </div>
-
-            <div className="col-span-2">
-              <FormLabel required>Time</FormLabel>
+            <div>
+              <FormLabel required>Pincode</FormLabel>
               <input
-                name="contact_mobile"
-                type="time"
-                value={contact.contact_mobile}
+                name="contact_pincode"
+                type="tel"
+                maxLength={6}
+                value={contact.contact_pincode}
                 onChange={(e) => onInputChange(e.target.name, e.target.value)}
                 className={inputClass}
                 required
               />
             </div>
-          </div>
 
+            <div>
+              <SelectInput
+                label="Status"
+                options={status}
+                required
+                value={contact.contact_status || ""}
+                name="contact_status"
+                onChange={(e) => onInputChange(e.target.name, e.target.value)}
+              />
+            </div>
+          </div>
           <div className="flex flex-col sm:flex-row sm:justify-center items-center gap-4">
             <Button
               className="w-36 text-white bg-blue-600"
               type="submit"
               disabled={isButtonDisabled || mobileError}
             >
-              {isButtonDisabled ? "Submitting..." : "Submit"}
+              {isButtonDisabled ? "Updateting..." : "Update"}
             </Button>
             <Button
               className="w-36 text-white bg-red-600"
@@ -336,4 +385,4 @@ const AddCampagin = () => {
   );
 };
 
-export default AddCampagin;
+export default EditContact;

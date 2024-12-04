@@ -162,6 +162,8 @@ const AppProvider = ({ children }) => {
           "/group",
           "/group/add",
           "/group/edit",
+          //developer
+          "/developer",
         ];
 
         const isAllowedPath = allowedPath.some((path) =>

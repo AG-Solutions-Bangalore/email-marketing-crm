@@ -108,7 +108,7 @@ const getMenuItems = (userTypeId) => [
     id: "about",
     title: "About Developer",
     icon: IconInfoHexagon,
-    href: "",
+    href: "/developer",
   },
 ];
 

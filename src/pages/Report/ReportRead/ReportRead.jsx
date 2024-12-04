@@ -40,10 +40,12 @@ const ReportRead = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "index", // We'll use a custom accessorKey for the index column
-        header: "#", // Header name for the index column
-        size: 50, // Adjust the size of the column
-        Cell: ({ row }) => row.index + 1, // Add the index value starting from 1
+        accessorKey: "index",
+        header: "#",
+        size: 50,
+        enableColumnFilter: false,
+        enableSorting: false,
+        Cell: ({ row }) => row.index + 1,
       },
       {
         accessorKey: "indicomp_full_name",
@@ -95,11 +97,10 @@ const ReportRead = () => {
   const table = useMantineReactTable({
     columns,
     data: reportreadData,
-    enableColumnFilterModes: true,
     enableColumnActions: false,
     enableStickyHeader: true,
     enableStickyFooter: true,
-    initialState: { showColumnFilters: true, showGlobalFilter: true },
+    initialState: { showGlobalFilter: true },
     mantineTableContainerProps: { sx: { maxHeight: "400px" } },
     renderTopToolbar: ({ table }) => {
       const handleActivate = () => {

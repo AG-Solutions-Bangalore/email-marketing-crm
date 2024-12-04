@@ -47,6 +47,8 @@ const Template = () => {
         accessorKey: "index",
         header: "#",
         size: 50,
+        enableColumnFilter: false,
+        enableSorting: false,
         Cell: ({ row }) => row.index + 1,
       },
       {
@@ -92,20 +94,13 @@ const Template = () => {
   const table = useMantineReactTable({
     columns,
     data: templateData,
-    enableColumnFilterModes: true,
     enableColumnActions: false,
     enableStickyHeader: true,
     enableStickyFooter: true,
-    initialState: { showColumnFilters: true, showGlobalFilter: true },
+    initialState: { showGlobalFilter: true },
     mantineTableContainerProps: { sx: { maxHeight: "400px" } },
-    renderTopToolbar: ({ table }) => {
-      const handleActivate = () => {
-        const selectedRows = table.getSelectedRowModel().flatRows;
-        selectedRows.forEach((row) => {
-          alert(`Activating: ${row.getValue("indicomp_full_name")}`);
-        });
-      };
 
+    renderTopToolbar: ({ table }) => {
       return (
         <Flex p="md" justify="space-between">
           <Text size="xl" weight={700}>

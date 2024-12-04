@@ -21,7 +21,7 @@ const Group = () => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`${BASE_URL}/panel-fetch-group`, {
+      const response = await axios.get(`${BASE_URL}/panel-fetch-group-list`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -44,6 +44,8 @@ const Group = () => {
         accessorKey: "index",
         header: "#",
         size: 50,
+        enableColumnFilter: false,
+        enableSorting: false,
         Cell: ({ row }) => row.index + 1,
       },
       {
@@ -89,11 +91,10 @@ const Group = () => {
   const table = useMantineReactTable({
     columns,
     data: groupdata,
-    enableColumnFilterModes: true,
     enableColumnActions: false,
     enableStickyHeader: true,
     enableStickyFooter: true,
-    initialState: { showColumnFilters: true, showGlobalFilter: true },
+    initialState: { showGlobalFilter: true },
     mantineTableContainerProps: { sx: { maxHeight: "400px" } },
     renderTopToolbar: ({ table }) => {
       //   const handleActivate = () => {
