@@ -67,10 +67,10 @@ const ContactImport = () => {
 
     const link = document.createElement("a");
     link.href = encodedUri;
-    link.setAttribute("download", "data_sample.csv"); 
+    link.setAttribute("download", "data_sample.csv");
     document.body.appendChild(link);
-    link.click(); 
-    document.body.removeChild(link); 
+    link.click();
+    document.body.removeChild(link);
   };
 
   const inputClass =
@@ -129,7 +129,7 @@ const ContactImport = () => {
             </Button>
             <Button
               className="w-36 text-white bg-red-600"
-              onClick={() => navigate("/group")}
+              onClick={() => navigate("/Contact")}
             >
               Back
             </Button>

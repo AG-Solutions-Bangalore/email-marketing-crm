@@ -58,7 +58,7 @@ const EditTemplate = () => {
   };
 
   const handleEditorChange = (value) => {
-    console.log("Editor Content:", value);
+    // console.log("Editor Content:", value);
     setTemplate((prevTemplate) => ({
       ...prevTemplate,
       template_design: value,
