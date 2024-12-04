@@ -97,7 +97,7 @@ const SignIn = () => {
           {/* Login Form */}
           <form onSubmit={handleSubmit} method="POST" className="space-y-6">
             <div>
-              <FormLabel required>Username</FormLabel>
+              <FormLabel required>Enter Your Email</FormLabel>
               <input
                 type="text"
                 name="email"

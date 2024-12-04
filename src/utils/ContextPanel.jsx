@@ -151,6 +151,7 @@ const AppProvider = ({ children }) => {
           "/templates/add",
           "/campaigns",
           "/campaigns/add",
+          "/campaigns/view",
           "/report/read",
           "/report/unsubscribe",
           "/report/visted",
