@@ -132,7 +132,7 @@ const Profile = () => {
     const data = {
       old_password: password.old_password,
       password: password.password,
-      username: localStorage.getItem("username"),
+      username: localStorage.getItem("email"),
     };
 
     try {
@@ -143,6 +143,10 @@ const Profile = () => {
       });
       toast.success("Password Updated Successfully!");
       setOpenDialog1(false);
+      setPassword({
+        password: "",
+        old_password: "",
+      });
     } catch (error) {
       console.error("Password change failed:", error);
       toast.error("Please enter valid old password");

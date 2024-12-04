@@ -72,10 +72,12 @@ const Contact = () => {
         accessorKey: "index",
         header: "#",
         size: 50,
+        enableColumnFilter: false,
+        enableSorting: false,
         Cell: ({ row }) => row.index + 1,
       },
       {
-        accessorKey: "group_name",
+        accessorKey: "group_names",
         header: "Group Name",
         size: 150,
       },
@@ -121,11 +123,10 @@ const Contact = () => {
   const table = useMantineReactTable({
     columns,
     data: contactData,
-    enableColumnFilterModes: true,
     enableColumnActions: false,
     enableStickyHeader: true,
     enableStickyFooter: true,
-    initialState: { showColumnFilters: true, showGlobalFilter: true },
+    initialState: { showGlobalFilter: true },
     mantineTableContainerProps: { sx: { maxHeight: "400px" } },
     renderTopToolbar: ({ table }) => (
       <Flex

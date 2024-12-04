@@ -44,6 +44,8 @@ const Campagin = () => {
         accessorKey: "index",
         header: "#",
         size: 50,
+        enableColumnFilter: false,
+        enableSorting: false,
         Cell: ({ row }) => row.index + 1,
       },
       {
@@ -96,12 +98,12 @@ const Campagin = () => {
   const table = useMantineReactTable({
     columns,
     data: campagindata,
-    enableColumnFilterModes: true,
-    enableColumnActions: false,
     enableStickyHeader: true,
     enableStickyFooter: true,
-    initialState: { showColumnFilters: true, showGlobalFilter: true },
+    enableColumnActions: false,
+    initialState: { showGlobalFilter: true },
     mantineTableContainerProps: { sx: { maxHeight: "400px" } },
+
     renderTopToolbar: ({ table }) => {
       const handleActivate = () => {
         const selectedRows = table.getSelectedRowModel().flatRows;
@@ -118,18 +120,7 @@ const Campagin = () => {
           <Flex gap="sm">
             <MRT_GlobalFilterTextInput table={table} />
             <MRT_ToggleFiltersButton table={table} />
-            {/* <Button
-              onClick={handleActivate}
-              sx={{
-                backgroundColor: "green !important",
-                color: "white",
-                "&:hover": {
-                  backgroundColor: "red  !important",
-                },
-              }}
-            >
-              Export
-            </Button> */}
+
             <Button
               className="w-36 text-white bg-blue-600 !important hover:bg-violet-400 hover:animate-pulse"
               onClick={() => {
