@@ -9,20 +9,20 @@ import {
   MRT_ToggleFiltersButton,
 } from "mantine-react-table";
 import { Box, Button, Center, Flex, Loader, Text } from "@mantine/core";
-import { IconEdit, IconEye, IconReceipt } from "@tabler/icons-react";
-import { IconTrash } from "@tabler/icons-react";
-import { useNavigate } from "react-router-dom";
+import { IconArrowBarLeft, IconTrash } from "@tabler/icons-react";
+import { useNavigate, useParams } from "react-router-dom";
 
-const Campagin = () => {
+const CampaginIndivialView = () => {
   const [campagindata, setCampaginData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const naviagte = useNavigate();
+  const navigate = useNavigate();
+  const { id } = useParams();
   const fetchCampaginData = async () => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `${BASE_URL}/panel-fetch-campaign-list`,
+        `${BASE_URL}/panel-fetch-campaign-by-id/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -39,7 +39,7 @@ const Campagin = () => {
 
   useEffect(() => {
     fetchCampaginData();
-  }, []);
+  }, [id]);
 
   const columns = useMemo(
     () => [
@@ -76,23 +76,6 @@ const Campagin = () => {
         header: "Status",
         size: 50,
       },
-      {
-        id: "id",
-        header: "Action",
-        size: 50,
-        enableHiding: false,
-        Cell: ({ row }) => (
-          <Flex gap="xs">
-            <IconEye
-              className="cursor-pointer text-blue-600 hover:text-red-800"
-              title="View"
-              onClick={() => {
-                naviagte(`/campaigns/view/${row.original.id}`);
-              }}
-            />
-          </Flex>
-        ),
-      },
     ],
     []
   );
@@ -117,20 +100,20 @@ const Campagin = () => {
       return (
         <Flex p="md" justify="space-between">
           <Text size="xl" weight={700}>
-            Campaign List
+            <Flex justify="center" align="center" sx={{ gap: "8px" }}>
+              <IconArrowBarLeft
+                className="cursor-pointer"
+                onClick={() => {
+                  navigate("/campaigns");
+                }}
+              />
+              Campaign List
+            </Flex>
           </Text>
+
           <Flex gap="sm">
             <MRT_GlobalFilterTextInput table={table} />
             <MRT_ToggleFiltersButton table={table} />
-
-            <Button
-              className="w-36 text-white bg-blue-600 !important hover:bg-violet-400 hover:animate-pulse"
-              onClick={() => {
-                naviagte("/campaigns/add");
-              }}
-            >
-              Add
-            </Button>
           </Flex>
         </Flex>
       );
@@ -155,4 +138,4 @@ const Campagin = () => {
   );
 };
 
-export default Campagin;
+export default CampaginIndivialView;

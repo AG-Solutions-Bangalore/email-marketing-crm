@@ -33,15 +33,11 @@ const ContactImport = () => {
     formData.append("uploaded_file", file);
 
     try {
-      await axios.post(
-        `${BASE_URL}/panel-import-contact`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      await axios.post(`${BASE_URL}/panel-import-contact`, formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       toast.success("Contact imported successfully!");
       navigate("/Contact");
       setFile(null);
@@ -59,14 +55,22 @@ const ContactImport = () => {
       {required && <span className="text-red-500 ml-1">*</span>}
     </label>
   );
-
   const downloadFile = () => {
+    const csvContent = `
+  Group Name,Contact Name,Email,Mobile,Address,State,Pincode
+  Test BBC,Rohit,testaaa@gmail.com,7852585285,"3rd Cross 4th Main Bangalore",Karnataka,564000
+    `.trim();
+
+    const encodedUri = `data:text/csv;charset=utf-8,${encodeURIComponent(
+      csvContent
+    )}`;
+
     const link = document.createElement("a");
-    link.href = "/assets/profile/data_sample.csv";
-    link.setAttribute("download", "data_sample.csv");
+    link.href = encodedUri;
+    link.setAttribute("download", "data_sample.csv"); 
     document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    link.click(); 
+    document.body.removeChild(link); 
   };
 
   const inputClass =
