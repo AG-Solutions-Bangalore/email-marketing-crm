@@ -1,9 +1,9 @@
-import BASE_URL from "../../../base/BaseUrl";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Layout from "../../../layout/Layout";
 import ReactToPrint from "react-to-print";
 import { useRef } from "react";
+import toast from "react-hot-toast";
 import {
   Table,
   TableBody,
@@ -28,21 +28,30 @@ const Table_Head = [
   { label: "Campagin Subject" },
 ];
 
-function ReportReadView() {
+function ReportCampaginView() {
   const [invoicesSub, setInvoicesSub] = useState([]);
   const componentRef = useRef();
   const tableRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
+  // const campaignData = location.state?.ReadData;
+  // if (campaignData && Array.isArray(campaignData) && campaignData.length > 0) {
+  //   console.log("Received campaign data", campaignData);
+  //   setInvoicesSub(campaignData);
+  // }
   useEffect(() => {
+    console.log("Location state:", location.state); // Log the entire location.state
     const campaignData = location.state?.ReadData;
-    if (campaignData) {
+    if (
+      campaignData &&
+      Array.isArray(campaignData) &&
+      campaignData.length > 0
+    ) {
       console.log("Received campaign data", campaignData);
       setInvoicesSub(campaignData);
-    } else {
-      console.log("No campaign data found.");
     }
   }, [location]);
+
   const handleSavePDF = () => {
     const input = tableRef.current;
 
@@ -105,10 +114,10 @@ function ReportReadView() {
             <IconArrowBarLeft
               className="mr-2 align-center cursor-pointer"
               onClick={() => {
-                navigate("/report/read");
+                navigate("/report/campaign");
               }}
             />
-            Report ReadView
+            Report CampaignView
           </div>
           {/* className="flex sm:justify-between md:flex-row items-center space-x-4 md:space-y-0 md:space-x-4 w-full md:w-auto" */}
           <div className="flex flex-row space-x-4">
@@ -137,93 +146,97 @@ function ReportReadView() {
           className="flex flex-col items-center  min-h-screen  p-4 bg-white "
           ref={mergeRefs(componentRef, tableRef)}
         >
-          <h2 className="font-bold">Report ReadView</h2>
+          <h2 className="font-bold">Report CampaignView</h2>
           <div className="w-full   p-4 ">
-            <TableContainer
-              component={Paper}
-              elevation={0}
-              className="shadow-none"
-              sx={{
-                maxHeight: "calc(100vh - 150px)",
-                overflowX: "auto",
-              }}
-            >
-              <Table className="table-auto border-collapse border border-gray-300">
-                <TableHead className="bg-gray-100">
-                  <TableRow>
-                    {Table_Head.map((group, index) => (
-                      <TableCell
+            {invoicesSub.length > 0 ? (
+              <TableContainer
+                component={Paper}
+                elevation={0}
+                className="shadow-none"
+                sx={{
+                  maxHeight: "calc(100vh - 150px)",
+                  overflowX: "auto",
+                }}
+              >
+                <Table className="table-auto border-collapse border border-gray-300">
+                  <TableHead className="bg-gray-100">
+                    <TableRow>
+                      {Table_Head.map((group, index) => (
+                        <TableCell
+                          key={index}
+                          sx={{
+                            textAlign: "center",
+                            fontWeight: "bold",
+                            borderBottom: "2px solid #ddd",
+                          }}
+                        >
+                          {group.label || "No Label"}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {invoicesSub.map((invoice, index) => (
+                      <TableRow
                         key={index}
                         sx={{
-                          textAlign: "center",
-                          fontWeight: "bold",
-                          borderBottom: "2px solid #ddd",
+                          "&:nth-of-type(odd)": {
+                            backgroundColor: "#f9f9f9",
+                          },
                         }}
                       >
-                        {group.label || "No Label"}
-                      </TableCell>
+                        <TableCell
+                          sx={{
+                            textAlign: "center",
+                            borderBottom: "1px solid #ddd",
+                          }}
+                        >
+                          {invoice.campaign_date}
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            textAlign: "center",
+                            borderBottom: "1px solid #ddd",
+                          }}
+                        >
+                          {invoice.campaign_time}
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            textAlign: "center",
+                            borderBottom: "1px solid #ddd",
+                          }}
+                        >
+                          {invoice.template_name}
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            textAlign: "center",
+                            borderBottom: "1px solid #ddd",
+                          }}
+                        >
+                          {invoice.campaign_individual}
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            textAlign: "center",
+                            borderBottom: "1px solid #ddd",
+                          }}
+                        >
+                          {invoice.campaign_subject}
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {invoicesSub.map((invoice, index) => (
-                    <TableRow
-                      key={index}
-                      sx={{
-                        "&:nth-of-type(odd)": {
-                          backgroundColor: "#f9f9f9",
-                        },
-                      }}
-                    >
-                      <TableCell
-                        sx={{
-                          textAlign: "center",
-                          borderBottom: "1px solid #ddd",
-                        }}
-                      >
-                        {invoice.campaign_date}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          textAlign: "center",
-                          borderBottom: "1px solid #ddd",
-                        }}
-                      >
-                        {invoice.campaign_time}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          textAlign: "center",
-                          borderBottom: "1px solid #ddd",
-                        }}
-                      >
-                        {invoice.template_name}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          textAlign: "center",
-                          borderBottom: "1px solid #ddd",
-                        }}
-                      >
-                        {invoice.campaign_individual}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          textAlign: "center",
-                          borderBottom: "1px solid #ddd",
-                        }}
-                      >
-                        {invoice.campaign_subject}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            ) : (
+              <p>No campaign data to display.</p>
+            )}
           </div>
         </div>
       </div>
     </Layout>
   );
 }
-export default ReportReadView;
+export default ReportCampaginView;

@@ -32,6 +32,27 @@ const ReportReadVisted = () => {
       [name]: value,
     }));
   };
+  // const onSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setIsButtonDisabled(true);
+
+  //   const data = {
+  //     from_date: visited.from_date,
+  //     to_date: visited.to_date,
+  //   };
+  //   try {
+  //     await axios.post(`${BASE_URL}/panel-fetch-visited-report`, data, {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //       },
+  //     });
+  //   } catch (error) {
+  //     toast.error("Error adding campaign!");
+  //     console.error(error);
+  //   } finally {
+  //     setIsButtonDisabled(false);
+  //   }
+  // };
   const onSubmit = async (e) => {
     e.preventDefault();
     setIsButtonDisabled(true);
@@ -40,15 +61,35 @@ const ReportReadVisted = () => {
       from_date: visited.from_date,
       to_date: visited.to_date,
     };
+
     try {
-      await axios.post(`${BASE_URL}/panel-fetch-visited-report`, data, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axios.post(
+        `${BASE_URL}/panel-fetch-visited-report`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (
+        response.data &&
+        response.data.visited &&
+        Array.isArray(response.data.visited) &&
+        response.data.visited.length > 0
+      ) {
+        console.log("Received visited data:", response.data.visited);
+
+        navigate("/report/visted/view", {
+          state: { ReadData: response.data.visited },
+        });
+      } else {
+        toast.error("No visited data available or empty.");
+      }
     } catch (error) {
-      toast.error("Error adding campaign!");
-      console.error(error);
+      console.error("Error while fetching visited data:", error);
+      toast.error("Error fetching visited data!");
     } finally {
       setIsButtonDisabled(false);
     }

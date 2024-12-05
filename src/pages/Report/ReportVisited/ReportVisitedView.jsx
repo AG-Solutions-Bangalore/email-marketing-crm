@@ -22,13 +22,13 @@ import {
 } from "@tabler/icons-react";
 const Table_Head = [
   { label: "Campagin Date" },
-  { label: "Campagin Time" },
-  { label: "Template Name" },
-  { label: "Campagin Individual" },
   { label: "Campagin Subject" },
+  { label: "Contact Name" },
+  { label: "Contact Mail" },
+  { label: "Contact Mobile" },
 ];
 
-function ReportReadView() {
+function ReportVisitedView() {
   const [invoicesSub, setInvoicesSub] = useState([]);
   const componentRef = useRef();
   const tableRef = useRef(null);
@@ -105,10 +105,10 @@ function ReportReadView() {
             <IconArrowBarLeft
               className="mr-2 align-center cursor-pointer"
               onClick={() => {
-                navigate("/report/read");
+                navigate("/report/visted");
               }}
             />
-            Report ReadView
+            Report Visted View
           </div>
           {/* className="flex sm:justify-between md:flex-row items-center space-x-4 md:space-y-0 md:space-x-4 w-full md:w-auto" */}
           <div className="flex flex-row space-x-4">
@@ -137,7 +137,7 @@ function ReportReadView() {
           className="flex flex-col items-center  min-h-screen  p-4 bg-white "
           ref={mergeRefs(componentRef, tableRef)}
         >
-          <h2 className="font-bold">Report ReadView</h2>
+          <h2 className="font-bold"> Report Visted View</h2>
           <div className="w-full   p-4 ">
             <TableContainer
               component={Paper}
@@ -189,31 +189,31 @@ function ReportReadView() {
                           borderBottom: "1px solid #ddd",
                         }}
                       >
-                        {invoice.campaign_time}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          textAlign: "center",
-                          borderBottom: "1px solid #ddd",
-                        }}
-                      >
-                        {invoice.template_name}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          textAlign: "center",
-                          borderBottom: "1px solid #ddd",
-                        }}
-                      >
-                        {invoice.campaign_individual}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          textAlign: "center",
-                          borderBottom: "1px solid #ddd",
-                        }}
-                      >
                         {invoice.campaign_subject}
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          textAlign: "center",
+                          borderBottom: "1px solid #ddd",
+                        }}
+                      >
+                        {invoice.contact_name}
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          textAlign: "center",
+                          borderBottom: "1px solid #ddd",
+                        }}
+                      >
+                        {invoice.campaign_mail}
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          textAlign: "center",
+                          borderBottom: "1px solid #ddd",
+                        }}
+                      >
+                        {invoice.contact_mobile}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -226,4 +226,4 @@ function ReportReadView() {
     </Layout>
   );
 }
-export default ReportReadView;
+export default ReportVisitedView;

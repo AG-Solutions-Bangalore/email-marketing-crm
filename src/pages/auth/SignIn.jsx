@@ -21,7 +21,12 @@ const SignIn = () => {
   // Input field class for styling
   const inputClass =
     "w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 border-green-500";
-
+  const FormLabel = ({ children, required }) => (
+    <label className="block text-sm font-semibold text-black mb-1">
+      {children}
+      {required && <span className="text-red-500 ml-1">*</span>}
+    </label>
+  );
   // Helper function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,11 +67,6 @@ const SignIn = () => {
     }
 
     setLoading(false);
-  };
-
-  // Handle forgotten password redirection
-  const handleForgetPasswordClick = () => {
-    navigate("/forget-password");
   };
 
   return (
@@ -140,19 +140,6 @@ const SignIn = () => {
               Forgot password?
             </Link>
           </div>
-
-          {/* Social Media Links */}
-          {/* <div className="mt-6">
-            <h6 className="text-center text-gray-600">Follow Us</h6>
-            <div className="flex justify-center space-x-4 mt-4">
-              <CgFacebook className="text-black hover:bg-blue-700 cursor-pointer hover:text-white p-2 rounded-full w-10 h-10" />
-              <TiSocialYoutubeCircular className="text-black hover:bg-red-500 hover:text-white p-2 rounded-full w-10 h-10" />
-              <FaTwitter className="text-black hover:bg-blue-500 hover:text-white p-2 rounded-full w-10 h-10" />
-              <TiSocialLinkedin className="text-black hover:bg-blue-500 hover:text-white p-2 rounded-full w-10 h-10" />
-              <FaInstagram className="text-black hover:bg-yellow-800 hover:text-white p-2 rounded-full w-10 h-10" />
-              <FaPinterest className="text-black hover:bg-red-500 hover:text-white p-2 rounded-full w-10 h-10" />
-            </div>
-          </div> */}
         </div>
       </div>
     </>

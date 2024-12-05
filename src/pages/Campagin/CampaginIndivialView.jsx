@@ -12,12 +12,17 @@ import { Box, Button, Center, Flex, Loader, Text } from "@mantine/core";
 import { IconArrowBarLeft, IconTrash } from "@tabler/icons-react";
 import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment/moment";
+import { DialogBody, DialogFooter, Dialog } from "@material-tailwind/react";
+import toast from "react-hot-toast";
 
 const CampaginIndivialView = () => {
   const [campagindata, setCampaginData] = useState([]);
+  const [campagindatastatus, setCampaginDataStatus] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
+
   const fetchCampaginData = async () => {
     setIsLoading(true);
     try {
@@ -31,6 +36,7 @@ const CampaginIndivialView = () => {
         }
       );
       setCampaginData(response.data?.campaign || []);
+      setCampaginDataStatus(response.data?.campaignsStatus);
     } catch (error) {
       console.error("Error fetching template data:", error);
     } finally {
@@ -41,7 +47,9 @@ const CampaginIndivialView = () => {
   useEffect(() => {
     fetchCampaginData();
   }, [id]);
+  const handleOpen = () => setOpen(true);
 
+  const handleClose = () => setOpen(false);
   const columns = useMemo(
     () => [
       {
@@ -83,6 +91,29 @@ const CampaginIndivialView = () => {
     []
   );
 
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      await axios.put(
+        `${BASE_URL}/panel-update-campaign-status/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      handleClose();
+      navigate("/campaigns");
+      toast.success("Campaign Closed successfully!");
+    } catch (error) {
+      toast.error("Error closing campaign!");
+      console.error(error);
+    }
+  };
+
   const table = useMantineReactTable({
     columns,
     data: campagindata,
@@ -93,13 +124,6 @@ const CampaginIndivialView = () => {
     mantineTableContainerProps: { sx: { maxHeight: "400px" } },
 
     renderTopToolbar: ({ table }) => {
-      const handleActivate = () => {
-        const selectedRows = table.getSelectedRowModel().flatRows;
-        selectedRows.forEach((row) => {
-          alert(`Activating: ${row.getValue("indicomp_full_name")}`);
-        });
-      };
-
       return (
         <Flex p="md" justify="space-between">
           <Text size="xl" weight={700}>
@@ -117,6 +141,14 @@ const CampaginIndivialView = () => {
           <Flex gap="sm">
             <MRT_GlobalFilterTextInput table={table} />
             <MRT_ToggleFiltersButton table={table} />
+            {campagindatastatus.campaign_list_status === "Pending" && (
+              <Button
+                className="w-36 text-white bg-red-600 !important hover:bg-red-400 hover:animate-pulse"
+                onClick={handleOpen}
+              >
+                Close
+              </Button>
+            )}
           </Flex>
         </Flex>
       );
@@ -137,6 +169,28 @@ const CampaginIndivialView = () => {
           <MantineReactTable table={table} />
         )}
       </Box>
+
+      <Dialog open={open} handler={handleOpen}>
+        <DialogBody>
+          <div className="text-xl font-bold text-black">
+            Are you sure you want to Close the Campagin?
+          </div>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            className="w-36 text-white bg-red-600 !important hover:bg-red-400 hover:animate-pulse mr-3"
+            onClick={handleClose}
+          >
+            No{" "}
+          </Button>
+          <Button
+            className="w-36 text-white bg-blue-600 !important hover:bg-violet-400 hover:animate-pulse"
+            onClick={onSubmit}
+          >
+            Yes{" "}
+          </Button>
+        </DialogFooter>
+      </Dialog>
     </Layout>
   );
 };

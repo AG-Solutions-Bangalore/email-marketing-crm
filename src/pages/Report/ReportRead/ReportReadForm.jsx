@@ -6,11 +6,12 @@ import toast from "react-hot-toast";
 import { Button } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import SelectInput from "../../../components/common/SelectInput";
+import ReportReadView from "./ReportView";
 
 const ReportReadForm = () => {
   const today = new Date();
   const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-
+  const [ReadData, setReadData] = useState([]);
   const formatDate = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -43,22 +44,28 @@ const ReportReadForm = () => {
       campaign_template_id: campagin.campaign_template_id,
     };
     try {
-      await axios.post(`${BASE_URL}/panel-fetch-read-report`, data, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      // toast.success("Campaign added successfully!");
-      // navigate("/campaigns");
-      // setCampagin({
-      //   campaign_list_template_id: "",
-      //   campaign_list_subject: "",
-      //   contact_email: "",
-      //   contact_address: "",
-      //   contact_state: "",
-      //   contact_pincode: "",
-      //   campaign_list_group: "",
-      // });
+      const response = await axios.post(
+        `${BASE_URL}/panel-fetch-read-report`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (
+        response.data &&
+        response.data.campaign &&
+        response.data.campaign.length > 0
+      ) {
+        setReadData(response.data.campaign);
+        console.log("d", response.data.campaign);
+        navigate("/report/view", {
+          state: { ReadData: response.data.campaign },
+        });
+      } else {
+        toast.error("No campaign data available or empty .");
+      }
     } catch (error) {
       toast.error("Error adding campaign!");
       console.error(error);
