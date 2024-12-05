@@ -108,7 +108,16 @@ const ReportUnsubscribe = () => {
     mantineTableContainerProps: { sx: { maxHeight: "400px" } },
     renderTopToolbar: ({ table }) => {
       return (
-        <Flex p="md" justify="space-between">
+        <Flex
+          p="md"
+          justify="space-between"
+          sx={{
+            overflowX: "auto",
+            maxWidth: "100%",
+          }}
+          flexWrap="wrap"
+        >
+          {" "}
           <Text size="xl" weight={700}>
             Unsubscribe
           </Text>

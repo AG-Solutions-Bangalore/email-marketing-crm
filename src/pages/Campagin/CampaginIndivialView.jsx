@@ -87,6 +87,21 @@ const CampaginIndivialView = () => {
         header: "Status",
         size: 50,
       },
+      {
+        id: "id",
+        header: "Action",
+        size: 50,
+        enableHiding: false,
+        Cell: ({ row }) => (
+          <Flex gap="xs">
+            <IconTrash
+              className="cursor-pointer text-blue-600 hover:text-red-800"
+              title="Delete"
+              onClick={() => onDelete(row.original.id)}
+            />
+          </Flex>
+        ),
+      },
     ],
     []
   );
@@ -125,7 +140,16 @@ const CampaginIndivialView = () => {
 
     renderTopToolbar: ({ table }) => {
       return (
-        <Flex p="md" justify="space-between">
+        <Flex
+          p="md"
+          justify="space-between"
+          sx={{
+            overflowX: "auto",
+            maxWidth: "100%",
+          }}
+          flexWrap="wrap"
+        >
+          {" "}
           <Text size="xl" weight={700}>
             <Flex justify="center" align="center" sx={{ gap: "8px" }}>
               <IconArrowBarLeft
@@ -137,7 +161,6 @@ const CampaginIndivialView = () => {
               Campaign List
             </Flex>
           </Text>
-
           <Flex gap="sm">
             <MRT_GlobalFilterTextInput table={table} />
             <MRT_ToggleFiltersButton table={table} />
@@ -154,6 +177,21 @@ const CampaginIndivialView = () => {
       );
     },
   });
+  const onDelete = async (id) => {
+    try {
+      await axios.delete(`${BASE_URL}/delete-campaign/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      toast.success("Campaign Deleted successfully!");
+      navigate("/campaigns");
+    } catch (error) {
+      toast.error("Error deleting campaign!");
+      console.error(error);
+    }
+  };
 
   return (
     <Layout>

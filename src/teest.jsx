@@ -9,41 +9,62 @@ import {
   MRT_ToggleFiltersButton,
 } from "mantine-react-table";
 import { Box, Button, Center, Flex, Loader, Text } from "@mantine/core";
-import { IconEdit, IconEye, IconReceipt } from "@tabler/icons-react";
-import { IconTrash } from "@tabler/icons-react";
+import { IconEdit } from "@tabler/icons-react";
+// import { toast } from "react-hot-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
-const ReportUnsubscribe = () => {
-  const [reportunsubscribedata, SetReportUnsubscribeData] = useState([]);
+const Contact = () => {
+  const [contactData, setContactData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const fetchReportUnsubscribeData = async () => {
-    setIsLoading(true); // Start loading
+  const fetchContactData = async () => {
+    setIsLoading(true);
     try {
-      const response = await axios.post(
-        `${BASE_URL}/panel-fetch-unsubscribe-report`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      if (response.status == 200) {
-        SetReportUnsubscribeData(response.data.unsubscribe);
-      } else {
-        console.error("Failed to fetch data", response);
-      }
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`${BASE_URL}/panel-fetch-contact-list`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setContactData(response.data?.contact || []);
     } catch (error) {
-      console.error("Error fetching unsubscribe report data:", error);
+      console.error("Error fetching contact data:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchReportUnsubscribeData();
+    fetchContactData();
   }, []);
+
+  const handleExport = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios({
+        url: `${BASE_URL}/panel-export-contact`,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob", // Ensure file download format
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "contact_list.csv");
+      document.body.appendChild(link);
+      link.click();
+
+      toast.success("Contact list exported successfully!");
+    } catch (error) {
+      toast.error("Failed to export contact list.");
+      console.error("Export error:", error);
+    }
+  };
 
   const columns = useMemo(
     () => [
@@ -56,23 +77,32 @@ const ReportUnsubscribe = () => {
         Cell: ({ row }) => row.index + 1,
       },
       {
-        accessorKey: "indicomp_full_name",
+        accessorKey: "group_names",
+        header: "Group Name",
+        size: 150,
+      },
+      {
+        accessorKey: "contact_name",
         header: "Name",
         size: 150,
       },
       {
-        accessorKey: "indicomp_full_name",
+        accessorKey: "contact_email",
         header: "Email",
-        size: 150,
+        size: 50,
       },
       {
-        accessorKey: "indicomp_full_name",
+        accessorKey: "contact_mobile",
         header: "Mobile",
-        size: 150,
+        size: 50,
       },
-
       {
-        id: "action",
+        accessorKey: "contact_status",
+        header: "Status",
+        size: 50,
+      },
+      {
+        id: "actions",
         header: "Action",
         size: 50,
         enableHiding: false,
@@ -81,81 +111,72 @@ const ReportUnsubscribe = () => {
             <IconEdit
               className="cursor-pointer text-blue-600 hover:text-blue-800"
               title="Edit"
+              onClick={() => navigate(`/Contact/edit/${row.original.id}`)}
             />
           </Flex>
         ),
       },
     ],
-    []
+    [navigate]
   );
-  const handleExport = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios({
-        url: `${BASE_URL}/panel-download-unsubscribe-report`,
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        responseType: "blob",
-      });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "Unsubscribe_list.csv");
-      document.body.appendChild(link);
-      link.click();
-
-      toast.success("Unsubscribe list exported successfully!");
-    } catch (error) {
-      toast.error("Failed to export Unsubscribe list.");
-      console.error("Export error:", error);
-    }
-  };
   const table = useMantineReactTable({
     columns,
-    data: reportunsubscribedata,
+    data: contactData,
     enableColumnActions: false,
     enableStickyHeader: true,
     enableStickyFooter: true,
     initialState: { showGlobalFilter: true },
     mantineTableContainerProps: { sx: { maxHeight: "400px" } },
-    renderTopToolbar: ({ table }) => {
-      const handleActivate = () => {
-        const selectedRows = table.getSelectedRowModel().flatRows;
-        selectedRows.forEach((row) => {
-          alert(`Activating: ${row.getValue("indicomp_full_name")}`);
-        });
-      };
-
-      return (
-        <Flex p="md" justify="space-between">
-          <Text size="xl" weight={700}>
-            Unsubscribe
-          </Text>
-          <Flex gap="sm">
-            <MRT_GlobalFilterTextInput table={table} />
-            <MRT_ToggleFiltersButton table={table} />
-            <Button
-              onClick={handleExport}
-              sx={{
-                backgroundColor: "green !important",
-                color: "white",
-                "&:hover": {
-                  backgroundColor: "red  !important",
-                },
-              }}
-            >
-              Download
-            </Button>
-            {/* <Button className="w-36 text-white bg-blue-600 !important hover:bg-violet-400 hover:animate-pulse">
-              Add
-            </Button> */}
-          </Flex>
+    renderTopToolbar: ({ table }) => (
+      <Flex
+        p="md"
+        justify="space-between"
+        sx={{
+          overflowX: "auto",
+          maxWidth: "100%",
+        }}
+        flexWrap="wrap"
+      >
+        <Text size="xl" weight={700}>
+          Contact List
+        </Text>
+        <Flex gap="sm">
+          <MRT_GlobalFilterTextInput table={table} />
+          <MRT_ToggleFiltersButton table={table} />
+          <Button
+            onClick={() => navigate("/Contact/import")}
+            sx={{
+              backgroundColor: "green !important",
+              color: "white",
+              "&:hover": {
+                backgroundColor: "red  !important",
+              },
+            }}
+          >
+            Import
+          </Button>
+          <Button
+            onClick={handleExport}
+            sx={{
+              backgroundColor: "green !important",
+              color: "white",
+              "&:hover": {
+                backgroundColor: "red  !important",
+              },
+            }}
+          >
+            Export
+          </Button>
+          <Button
+            className="w-36 text-white bg-blue-600 !important hover:bg-violet-400 hover:animate-pulse"
+            onClick={() => navigate("/Contact/add")}
+          >
+            Add
+          </Button>
         </Flex>
-      );
-    },
+      </Flex>
+    ),
   });
 
   return (
@@ -176,4 +197,4 @@ const ReportUnsubscribe = () => {
   );
 };
 
-export default ReportUnsubscribe;
+export default Contact;

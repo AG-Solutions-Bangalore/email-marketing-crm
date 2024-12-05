@@ -3,7 +3,6 @@ import {
   Avatar,
   Box,
   Menu,
-  Button,
   IconButton,
   MenuItem,
   ListItemIcon,
@@ -11,14 +10,15 @@ import {
   Tooltip,
   Dialog,
 } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Button } from "@mantine/core";
+
+import { useNavigate } from "react-router-dom";
 
 import { IconMail, IconUser, IconCircleX } from "@tabler/icons-react";
 import Logout from "../../components/Logout";
 import axios from "axios";
 import BASE_URL from "../../base/BaseUrl";
 import toast from "react-hot-toast";
-import { IconInfoOctagon } from "@tabler/icons-react";
 import SelectInput from "../../components/common/SelectInput";
 import { IconSettings } from "@tabler/icons-react";
 const Profile = () => {
@@ -30,9 +30,7 @@ const Profile = () => {
   const [openDialog1, setOpenDialog1] = useState(false);
 
   const [state, setState] = useState([]);
-  // const [oldPassword, setOldPassword] = useState("");
-  // const [newPassword, setNewPassword] = useState("");
-  // const [confirmPassword, setConfirmPassword] = useState("");
+
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const [profile, setProfile] = useState({
@@ -247,8 +245,7 @@ const Profile = () => {
         <Box mt={1} py={1} px={2}>
           <Button
             onClick={handleOpenLogout}
-            variant="outlined"
-            color="primary"
+            className="text-center text-sm font-[400] cursor-pointer rounded-full text-black border-[1px] border-blue-300 hover:bg-red-600 hover:text-white"
             fullWidth
           >
             Logout
@@ -364,13 +361,13 @@ const Profile = () => {
                 </div>
 
                 <div className="mt-5 flex justify-center">
-                  <button
+                  <Button
+                    className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 h-15 text-white bg-blue-600 hover:bg-green-700 p-2 rounded-lg shadow-md mr-2"
                     disabled={isButtonDisabled}
                     type="submit"
-                    className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 h-15 text-white bg-blue-600 hover:bg-green-700 p-2 rounded-lg shadow-md mr-2"
                   >
                     {isButtonDisabled ? "updating..." : "Update Profile"}
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -431,25 +428,15 @@ const Profile = () => {
                       className={inputClass}
                     />
                   </div>
-                  {/* <div>
-                    <FormLabel required>Confirm Password</FormLabel>
-                    <input
-                      required
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className={inputClass}
-                    />
-                  </div> */}
                 </div>
                 <div className="mt-5 flex justify-center">
-                  <button
+                  <Button
+                    className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 h-15 text-white bg-blue-600 hover:bg-green-700 p-2 rounded-lg shadow-md mr-2"
                     disabled={isButtonDisabled}
                     type="submit"
-                    className="text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 h-15 text-white bg-blue-600 hover:bg-green-700 p-2 rounded-lg shadow-md mr-2"
                   >
-                    {isButtonDisabled ? "updating..." : "Update Profile "}
-                  </button>
+                    {isButtonDisabled ? "Change..." : "Change Password"}
+                  </Button>
                 </div>
               </div>
             </div>
