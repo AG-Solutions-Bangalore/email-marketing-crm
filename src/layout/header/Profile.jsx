@@ -11,9 +11,7 @@ import {
   Dialog,
 } from "@mui/material";
 import { Button } from "@mantine/core";
-
 import { useNavigate } from "react-router-dom";
-
 import { IconMail, IconUser, IconCircleX } from "@tabler/icons-react";
 import Logout from "../../components/Logout";
 import axios from "axios";
@@ -21,6 +19,7 @@ import BASE_URL from "../../base/BaseUrl";
 import toast from "react-hot-toast";
 import SelectInput from "../../components/common/SelectInput";
 import { IconSettings } from "@tabler/icons-react";
+import logo from "../../../public/user_1.png";
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = React.useState(null);
   const [openModal, setOpenModal] = React.useState(false);
@@ -197,14 +196,14 @@ const Profile = () => {
         }}
         onClick={handleClick2}
       >
-        <Avatar
-          src="/src/assets/profile/user_1.png"
-          alt="image"
-          sx={{
-            width: 35,
-            height: 35,
-          }}
-        />
+     <Avatar
+  src={logo}
+  alt="image"
+  sx={{
+    width: 35, // Smaller width
+    height: 35, // Smaller height
+  }}
+/>
       </IconButton>
       {/* ------------------------------------------- */}
       {/* Message Dropdown */}

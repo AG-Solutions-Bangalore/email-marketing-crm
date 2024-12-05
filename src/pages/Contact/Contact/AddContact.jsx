@@ -21,7 +21,6 @@ const AddContact = () => {
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const navigate = useNavigate();
-  const [mobileError, setMobileError] = useState("");
   const [state, setState] = useState([]);
   const [group, setGroup] = useState([]);
 
@@ -29,11 +28,11 @@ const AddContact = () => {
     const { value } = event.target;
     setContact((prev) => ({
       ...prev,
-      contact_group: value, 
+      contact_group: value,
     }));
   };
 
-  const validateOnlyDigits = (inputtxt) => /^\d*$/.test(inputtxt); 
+  const validateOnlyDigits = (inputtxt) => /^\d*$/.test(inputtxt);
 
   const onInputChange = (name, value) => {
     if (name === "contact_mobile" && validateOnlyDigits(value)) {
@@ -47,11 +46,6 @@ const AddContact = () => {
     e.preventDefault();
     setIsButtonDisabled(true);
 
-    if (mobileError) {
-      toast.error("Please fix the errors before submitting.");
-      setIsButtonDisabled(false);
-      return;
-    }
     const groupString = contact.contact_group.join(",");
 
     const data = {
@@ -155,7 +149,7 @@ const AddContact = () => {
               />
             </div>
             <div>
-              <FormLabel required>Mobile No</FormLabel>
+              <FormLabel>Mobile No</FormLabel>
               <input
                 name="contact_mobile"
                 type="tel"
@@ -163,15 +157,37 @@ const AddContact = () => {
                 value={contact.contact_mobile}
                 onChange={(e) => onInputChange(e.target.name, e.target.value)}
                 className={inputClass}
-                required
               />
-              {mobileError && (
-                <p className="text-red-500 text-sm mt-1">{mobileError}</p>
-              )}
             </div>
 
             <FormControl sx={{ width: "100%" }}>
-              <FormLabel required>Group Name</FormLabel>
+              {/* <FormLabel required>Group Name </FormLabel> */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <FormLabel
+                  sx={{ display: "flex", alignItems: "center" }}
+                  required
+                >
+                  <span style={{ marginRight: "5px" }}></span> Group Name
+                </FormLabel>
+                <span
+                  style={{
+                    fontSize: "12px",
+                    color: "green",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    navigate("/group/add");
+                  }}
+                >
+                  + Add{" "}
+                </span>
+              </div>
               <Select
                 labelId="demo-group-name-label"
                 id="demo-group-name"
@@ -218,14 +234,13 @@ const AddContact = () => {
           </div>
           <div>
             <div>
-              <FormLabel required>Address</FormLabel>
+              <FormLabel>Address</FormLabel>
               <textarea
                 name="contact_address"
                 value={contact.contact_address}
                 onChange={(e) => onInputChange(e.target.name, e.target.value)}
                 rows="3"
                 className={inputClass}
-                required
               />
             </div>
           </div>
@@ -237,7 +252,6 @@ const AddContact = () => {
                   value: item.state_name,
                   label: item.state_name,
                 }))}
-                required
                 value={contact.contact_state || ""}
                 name="contact_state"
                 onChange={(e) => onInputChange(e.target.name, e.target.value)}
@@ -245,7 +259,7 @@ const AddContact = () => {
             </div>
 
             <div>
-              <FormLabel required>Pincode</FormLabel>
+              <FormLabel>Pincode</FormLabel>
               <input
                 name="contact_pincode"
                 type="tel"
@@ -253,18 +267,14 @@ const AddContact = () => {
                 value={contact.contact_pincode}
                 onChange={(e) => onInputChange(e.target.name, e.target.value)}
                 className={inputClass}
-                required
               />
-              {mobileError && (
-                <p className="text-red-500 text-sm mt-1">{mobileError}</p>
-              )}
             </div>
           </div>
           <div className="flex flex-col sm:flex-row sm:justify-center items-center gap-4">
             <Button
               className="w-36 text-white bg-blue-600"
               type="submit"
-              disabled={isButtonDisabled || mobileError}
+              disabled={isButtonDisabled}
             >
               {isButtonDisabled ? "Submitting..." : "Submit"}
             </Button>

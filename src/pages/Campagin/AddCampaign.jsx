@@ -203,7 +203,7 @@ const AddCampagin = () => {
       <div className="bg-[#FFFFFF] p-4 rounded-lg">
         <div className="sticky top-0 p-2 mb-4 border-b-2 border-green-500 rounded-lg bg-[#E1F5FA]">
           <h2 className="px-5 text-black text-lg flex items-center gap-2">
-            Add Campaign
+            Create Campaign
           </h2>
         </div>
         <form
@@ -237,52 +237,55 @@ const AddCampagin = () => {
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6">
-            <FormControl sx={{ width: "100%" }}>
-              <FormLabel>Group Name</FormLabel>
-              <Select
-                labelId="demo-group-name-label"
-                id="demo-group-name"
-                multiple
-                name="campaign_list_group"
-                value={campagin.campaign_list_group}
-                onChange={handleGroupChange}
-                input={
-                  <OutlinedInput
-                    sx={{
-                      width: "100%",
-                      fontSize: "0.75rem",
-                      border: "1px solid #4caf50",
-                      borderRadius: "8px",
-                      "&:focus": {
-                        outline: "none",
-                        borderColor: "#42a5f5",
-                        boxShadow: "0 0 0 1px rgba(66, 165, 245, 0.5)",
-                      },
-                    }}
-                    size="small"
-                  />
-                }
-              >
-                {group.map((group) => (
-                  <MenuItem key={group.id} value={group.id}>
-                    {group.group_name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
+            {campagin.campaign_list_individual ? null : (
+              <FormControl sx={{ width: "100%" }}>
+                <FormLabel>Group Name</FormLabel>
+                <Select
+                  labelId="demo-group-name-label"
+                  id="demo-group-name"
+                  multiple
+                  name="campaign_list_group"
+                  value={campagin.campaign_list_group}
+                  onChange={handleGroupChange}
+                  input={
+                    <OutlinedInput
+                      sx={{
+                        width: "100%",
+                        fontSize: "0.75rem",
+                        border: "1px solid #4caf50",
+                        borderRadius: "8px",
+                        "&:focus": {
+                          outline: "none",
+                          borderColor: "#42a5f5",
+                          boxShadow: "0 0 0 1px rgba(66, 165, 245, 0.5)",
+                        },
+                      }}
+                      size="small"
+                    />
+                  }
+                >
+                  {group.map((group) => (
+                    <MenuItem key={group.id} value={group.id}>
+                      {group.group_name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
             <div>
-              <SelectInput
-                label="Contact Individual"
-                options={email.map((item) => ({
-                  value: item.contact_email,
-                  label: item.contact_email,
-                }))}
-                // required
-                value={campagin.campaign_list_individual || ""}
-                name="campaign_list_individual"
-                onChange={(e) => onInputChange(e.target.name, e.target.value)}
-              />
+              {campagin.campaign_list_group.length > 0 ? null : (
+                <SelectInput
+                  label="Contact Individual"
+                  options={email.map((item) => ({
+                    value: item.contact_email,
+                    label: item.contact_email,
+                  }))}
+                  // required
+                  value={campagin.campaign_list_individual || ""}
+                  name="campaign_list_individual"
+                  onChange={(e) => onInputChange(e.target.name, e.target.value)}
+                />
+              )}
             </div>
           </div>
 
@@ -305,7 +308,7 @@ const AddCampagin = () => {
 
             <div className="col-span-2">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <FormLabel required>Date</FormLabel>
+                <FormLabel required> Campagin Start Date</FormLabel>
 
                 <DatePicker
                   value={campagin.campaign_list_date}
@@ -313,7 +316,7 @@ const AddCampagin = () => {
                   onChange={(newValue) =>
                     onInputChange("campaign_list_date", newValue)
                   }
-                  // Conditionally apply the shouldDisableDate prop based on checkbox state
+                  format="DD-MM-YYYY"
                   shouldDisableDate={
                     checkboxChecked ? undefined : isDateDisabled
                   }
@@ -338,21 +341,8 @@ const AddCampagin = () => {
                       },
                     },
                   }}
-                  // renderInput={(params) => <input {...params.inputProps} />}
                 />
               </LocalizationProvider>
-            </div>
-
-            <div className="col-span-2">
-              <FormLabel required>Time</FormLabel>
-              <input
-                name="campaign_list_time"
-                type="time"
-                value={campagin.campaign_list_time}
-                onChange={(e) => onInputChange(e.target.name, e.target.value)}
-                className={inputClass}
-                required
-              />
             </div>
           </div>
 

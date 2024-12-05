@@ -58,11 +58,11 @@ const Campagin = () => {
         size: 150,
         Cell: ({ value }) => moment(value).format("DD-MM-YYYY"),
       },
-      {
-        accessorKey: "campaign_list_time",
-        header: "Time",
-        size: 150,
-      },
+      // {
+      //   accessorKey: "campaign_list_time",
+      //   header: "Time",
+      //   size: 150,
+      // },
       {
         accessorKey: "template_name",
         header: "Template Name",
