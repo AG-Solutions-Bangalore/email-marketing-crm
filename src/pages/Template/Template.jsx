@@ -9,8 +9,7 @@ import {
   MRT_ToggleFiltersButton,
 } from "mantine-react-table";
 import { Box, Button, Center, Flex, Loader, Text } from "@mantine/core";
-import { IconEdit, IconEye, IconReceipt } from "@tabler/icons-react";
-import { IconTrash } from "@tabler/icons-react";
+import { IconEdit } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 
 const Template = () => {
@@ -80,10 +79,6 @@ const Template = () => {
                 navigate(`/templates/edit/${row.original.id}`);
               }}
             />
-            {/* <IconTrash
-              className="cursor-pointer text-blue-600 hover:text-red-800"
-              title="Delete"
-            /> */}
           </Flex>
         ),
       },
@@ -102,25 +97,23 @@ const Template = () => {
 
     renderTopToolbar: ({ table }) => {
       return (
-        <Flex p="md" justify="space-between">
+        <Flex
+          p="md"
+          justify="space-between"
+          sx={{
+            overflowX: "auto",
+            maxWidth: "100%",
+          }}
+          flexWrap="wrap"
+        >
+          {" "}
           <Text size="xl" weight={700}>
             Template
           </Text>
           <Flex gap="sm">
             <MRT_GlobalFilterTextInput table={table} />
             <MRT_ToggleFiltersButton table={table} />
-            {/* <Button
-              onClick={handleActivate}
-              sx={{
-                backgroundColor: "green !important",
-                color: "white",
-                "&:hover": {
-                  backgroundColor: "red  !important",
-                },
-              }}
-            >
-              Add
-            </Button> */}
+
             <Button
               className="w-36 text-white bg-blue-600 !important hover:bg-violet-400 hover:animate-pulse"
               onClick={() => {

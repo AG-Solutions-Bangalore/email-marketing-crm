@@ -18,8 +18,11 @@ import html2canvas from "html2canvas";
 import {
   IconArrowBarLeft,
   IconFileTypePdf,
+  IconFileTypeXls,
   IconPrinter,
 } from "@tabler/icons-react";
+import toast from "react-hot-toast";
+import axios from "axios";
 const Table_Head = [
   { label: "Campagin Date" },
   { label: "Campagin Time" },
@@ -34,6 +37,10 @@ function ReportReadView() {
   const tableRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const ReadData1 = localStorage.getItem("ReadData1");
+  const ReadData2 = localStorage.getItem("ReadData2");
+  const ReadData3 = localStorage.getItem("ReadData3");
+
   useEffect(() => {
     const campaignData = location.state?.ReadData;
     if (campaignData) {
@@ -97,6 +104,37 @@ function ReportReadView() {
       });
     };
 
+  const handleExport = async () => {
+    const data = {
+      from_date: ReadData1,
+      to_date: ReadData2,
+      campaign_template_id: ReadData3,
+    };
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios({
+        url: `${BASE_URL}/panel-download-read-report`,
+        method: "POST",
+        data,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "read_list.csv");
+      document.body.appendChild(link);
+      link.click();
+
+      toast.success("Contact list exported successfully!");
+    } catch (error) {
+      toast.error("Failed to export contact list.");
+      console.error("Export error:", error);
+    }
+  };
   return (
     <Layout>
       <div className="mt-3">
@@ -118,6 +156,14 @@ function ReportReadView() {
               onClick={handleSavePDF}
             >
               <IconFileTypePdf />
+              <span className="hidden sm:inline">Pdf</span>{" "}
+            </button>
+            <button
+              variant="text"
+              className="flex items-center space-x-2"
+              onClick={handleExport}
+            >
+              <IconFileTypeXls />
               <span className="hidden sm:inline">Download</span>{" "}
             </button>
 
@@ -125,7 +171,7 @@ function ReportReadView() {
               trigger={() => (
                 <button variant="text" className="flex items-center space-x-2">
                   <IconPrinter />
-                  <span className="hidden sm:inline">Print Receipt</span>
+                  <span className="hidden sm:inline">Print</span>
                 </button>
               )}
               content={() => componentRef.current}

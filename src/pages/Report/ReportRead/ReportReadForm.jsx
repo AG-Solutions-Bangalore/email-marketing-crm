@@ -6,12 +6,10 @@ import toast from "react-hot-toast";
 import { Button } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import SelectInput from "../../../components/common/SelectInput";
-import ReportReadView from "./ReportView";
 
 const ReportReadForm = () => {
   const today = new Date();
   const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-  const [ReadData, setReadData] = useState([]);
   const formatDate = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -58,8 +56,9 @@ const ReportReadForm = () => {
         response.data.campaign &&
         response.data.campaign.length > 0
       ) {
-        setReadData(response.data.campaign);
-        console.log("d", response.data.campaign);
+        localStorage.setItem("ReadData1", campagin.from_date);
+        localStorage.setItem("ReadData2", campagin.to_date);
+        localStorage.setItem("ReadData3", campagin.campaign_template_id);
         navigate("/report/view", {
           state: { ReadData: response.data.campaign },
         });
@@ -117,13 +116,13 @@ const ReportReadForm = () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        responseType: "blob", // Ensure file download format
+        responseType: "blob",
       });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "contact_list.csv");
+      link.setAttribute("download", "read_list.csv");
       document.body.appendChild(link);
       link.click();
 

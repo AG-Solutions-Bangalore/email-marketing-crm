@@ -54,6 +54,8 @@ const ReportCampagin = () => {
         response.data.campaign &&
         response.data.campaign.length > 0
       ) {
+        localStorage.setItem("ReadData1", campaign.from_date);
+        localStorage.setItem("ReadData2", campaign.to_date);
         navigate("/report/campaign/view", {
           state: { ReadData: response.data.campaign },
         });

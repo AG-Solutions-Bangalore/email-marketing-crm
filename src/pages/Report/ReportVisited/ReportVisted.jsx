@@ -32,27 +32,7 @@ const ReportReadVisted = () => {
       [name]: value,
     }));
   };
-  // const onSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setIsButtonDisabled(true);
 
-  //   const data = {
-  //     from_date: visited.from_date,
-  //     to_date: visited.to_date,
-  //   };
-  //   try {
-  //     await axios.post(`${BASE_URL}/panel-fetch-visited-report`, data, {
-  //       headers: {
-  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //       },
-  //     });
-  //   } catch (error) {
-  //     toast.error("Error adding campaign!");
-  //     console.error(error);
-  //   } finally {
-  //     setIsButtonDisabled(false);
-  //   }
-  // };
   const onSubmit = async (e) => {
     e.preventDefault();
     setIsButtonDisabled(true);
@@ -79,8 +59,8 @@ const ReportReadVisted = () => {
         Array.isArray(response.data.visited) &&
         response.data.visited.length > 0
       ) {
-        console.log("Received visited data:", response.data.visited);
-
+        localStorage.setItem("ReadData1", visited.from_date);
+        localStorage.setItem("ReadData2", visited.to_date);
         navigate("/report/visted/view", {
           state: { ReadData: response.data.visited },
         });

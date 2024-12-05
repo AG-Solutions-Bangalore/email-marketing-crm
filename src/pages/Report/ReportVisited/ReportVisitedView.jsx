@@ -18,8 +18,11 @@ import html2canvas from "html2canvas";
 import {
   IconArrowBarLeft,
   IconFileTypePdf,
+  IconFileTypeXls,
   IconPrinter,
 } from "@tabler/icons-react";
+import axios from "axios";
+import toast from "react-hot-toast";
 const Table_Head = [
   { label: "Campagin Date" },
   { label: "Campagin Subject" },
@@ -96,7 +99,38 @@ function ReportVisitedView() {
         }
       });
     };
+  const ReadData1 = localStorage.getItem("ReadData1");
+  const ReadData2 = localStorage.getItem("ReadData2");
+  const handleExport = async () => {
+    const data = {
+      from_date: ReadData1,
+      to_date: ReadData2,
+    };
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios({
+        url: `${BASE_URL}/panel-download-visited-report`,
+        method: "POST",
+        data,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob",
+      });
 
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Visted_list.csv");
+      document.body.appendChild(link);
+      link.click();
+
+      toast.success("Visted list exported successfully!");
+    } catch (error) {
+      toast.error("Failed to export Visted list.");
+      console.error("Export error:", error);
+    }
+  };
   return (
     <Layout>
       <div className="mt-3">
@@ -118,6 +152,15 @@ function ReportVisitedView() {
               onClick={handleSavePDF}
             >
               <IconFileTypePdf />
+              <span className="hidden sm:inline">Download</span>{" "}
+            </button>
+
+            <button
+              variant="text"
+              className="flex items-center space-x-2"
+              onClick={handleExport}
+            >
+              <IconFileTypeXls />
               <span className="hidden sm:inline">Download</span>{" "}
             </button>
 

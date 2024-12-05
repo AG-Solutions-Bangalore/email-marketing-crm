@@ -18,8 +18,11 @@ import html2canvas from "html2canvas";
 import {
   IconArrowBarLeft,
   IconFileTypePdf,
+  IconFileTypeXls,
   IconPrinter,
 } from "@tabler/icons-react";
+import axios from "axios";
+import BASE_URL from "../../../base/BaseUrl";
 const Table_Head = [
   { label: "Campagin Date" },
   { label: "Campagin Time" },
@@ -34,11 +37,7 @@ function ReportCampaginView() {
   const tableRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
-  // const campaignData = location.state?.ReadData;
-  // if (campaignData && Array.isArray(campaignData) && campaignData.length > 0) {
-  //   console.log("Received campaign data", campaignData);
-  //   setInvoicesSub(campaignData);
-  // }
+
   useEffect(() => {
     console.log("Location state:", location.state); // Log the entire location.state
     const campaignData = location.state?.ReadData;
@@ -105,7 +104,39 @@ function ReportCampaginView() {
         }
       });
     };
+  const ReadData1 = localStorage.getItem("ReadData1");
+  const ReadData2 = localStorage.getItem("ReadData2");
 
+  const handleExport = async () => {
+    const data = {
+      from_date: ReadData1,
+      to_date: ReadData2,
+    };
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios({
+        url: `${BASE_URL}/panel-download-campaign-sent-report`,
+        method: "POST",
+        data,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Campaign_list.csv");
+      document.body.appendChild(link);
+      link.click();
+
+      toast.success("Campaign list exported successfully!");
+    } catch (error) {
+      toast.error("Failed to export Campaign list.");
+      console.error("Export error:", error);
+    }
+  };
   return (
     <Layout>
       <div className="mt-3">
@@ -127,6 +158,15 @@ function ReportCampaginView() {
               onClick={handleSavePDF}
             >
               <IconFileTypePdf />
+              <span className="hidden sm:inline">Download</span>{" "}
+            </button>
+
+            <button
+              variant="text"
+              className="flex items-center space-x-2"
+              onClick={handleExport}
+            >
+              <IconFileTypeXls />
               <span className="hidden sm:inline">Download</span>{" "}
             </button>
 

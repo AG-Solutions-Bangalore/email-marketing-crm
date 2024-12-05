@@ -109,15 +109,17 @@ const Campagin = () => {
     mantineTableContainerProps: { sx: { maxHeight: "400px" } },
 
     renderTopToolbar: ({ table }) => {
-      const handleActivate = () => {
-        const selectedRows = table.getSelectedRowModel().flatRows;
-        selectedRows.forEach((row) => {
-          alert(`Activating: ${row.getValue("indicomp_full_name")}`);
-        });
-      };
-
       return (
-        <Flex p="md" justify="space-between">
+        <Flex
+          p="md"
+          justify="space-between"
+          sx={{
+            overflowX: "auto",
+            maxWidth: "100%",
+          }}
+          flexWrap="wrap"
+        >
+          {" "}
           <Text size="xl" weight={700}>
             Campaign List
           </Text>
