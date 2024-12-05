@@ -1,6 +1,6 @@
 import React from "react";
 import Layout from "../../layout/Layout";
-import logo from "../../assets/profile/user_1.png";
+import logo from "../../../public/user_1.png";
 const Developer = () => {
   return (
     <Layout>
@@ -97,8 +97,6 @@ const Developer = () => {
               </p>
             </div>
           </div>
-
-        
         </div>
       </div>
     </Layout>

@@ -38,7 +38,7 @@ const AddTemplate = () => {
       ],
       ["link", "image", "video"],
       [{ color: [] }, { background: [] }],
-      ["code-block", "blockquote", ],
+      ["code-block", "blockquote"],
       ["clean"],
     ],
     clipboard: {
@@ -153,14 +153,13 @@ const AddTemplate = () => {
               />
             </div>
             <div>
-              <FormLabel required>Template URL</FormLabel>
+              <FormLabel>Template URL</FormLabel>
               <input
                 type="text"
                 name="template_url"
                 value={template.template_url}
                 onChange={(e) => onInputChange(e.target.name, e.target.value)}
                 className={inputClass}
-                required
               />
             </div>
           </div>

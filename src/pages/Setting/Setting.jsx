@@ -162,7 +162,7 @@ const Setting = () => {
               />
             </div>
             <FormControl sx={{ width: "100%" }}>
-              <FormLabel required>Group Name</FormLabel>
+              <FormLabel required>Select Time Slot(Max Four)</FormLabel>
               <Select
                 labelId="demo-group-name-label"
                 id="demo-group-name"
