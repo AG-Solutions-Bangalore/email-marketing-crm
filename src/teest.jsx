@@ -1,375 +1,379 @@
-import React, { useEffect, useState } from "react";
-import Layout from "../../../layout/Layout";
+import BASE_URL from "./base/BaseUrl";
+import { useParams } from "react-router-dom";
+import { Button } from "@mui/material";
+// import { LuDownload } from "react-icons/lu";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import BASE_URL from "../../../base/BaseUrl";
-import toast from "react-hot-toast";
-import { Button } from "@mantine/core";
-import { useNavigate, useParams } from "react-router-dom";
-import { FormControl, Select, MenuItem, OutlinedInput } from "@mui/material";
-import SelectInput from "../../../components/common/SelectInput";
-const status = [
-  {
-    value: "Active",
-    label: "Active",
-  },
-  {
-    value: "Inactive",
-    label: "Inactive",
-  },
-];
+import Layout from "./layout/Layout";
+// import { MdOutlineEmail } from "react-icons/md";
+// import { IoMdPrint } from "react-icons/io";
+// import PageTitle from "../.components/PageTitle";
+import ReactToPrint from "react-to-print";
+import { useRef } from "react";
+import { grey } from "@mui/material/colors";
 
-const EditContact = () => {
-  const [contact, setContact] = useState({
-    contact_name: "",
-    contact_mobile: "",
-    contact_email: "",
-    contact_address: "",
-    contact_group: [],
-    contact_state: "",
-    contact_pincode: "",
-    contact_status: "",
-  });
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import TableFooter from "@mui/material/TableFooter";
 
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const navigate = useNavigate();
-  const [mobileError, setMobileError] = useState("");
-  const [group, setGroup] = useState([]);
-  const [state, setState] = useState([]);
+function Tesst() {
+  const [theId, setTheId] = useState(0);
+  const [customer, setCustomer] = useState([]);
+  const [invoices, setInvoices] = useState({});
+  const [invoicesSub, setInvoicesSub] = useState([]);
   const { id } = useParams();
-  // const handleGroupChange = (event) => {
-  //   const { value } = event.target;
-  //   setContact((prev) => ({
-  //     ...prev,
-  //     contact_group: Array.isArray(value) ? value : [],
-  //   }));
-  // };
-  const handleGroupChange = (event) => {
-    const { value } = event.target;
+  const componentRef = useRef();
+  const tableRef = useRef(null);
 
-    setContact((prev) => {
-      const updatedGroup = prev.contact_group.includes(value)
-        ? prev.contact_group.filter((group) => group !== value)
-        : [...prev.contact_group, value];
+  useEffect(() => {
+    setTheId(id);
 
-      return {
-        ...prev,
-        contact_group: updatedGroup,
-      };
+    axios({
+      url: BASE_URL + "/api/panel-fetch-invoice-by-view/" + id,
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }).then((res) => {
+      setInvoices(res.data.invoice);
+      setInvoicesSub(res.data.invoiceSub);
+      setCustomer(res.data.customer);
+    });
+  }, []);
+  const sendEmail = (e) => {
+    e.preventDefault();
+    axios({
+      url: BASE_URL + "/api/panel-send-invoice?id=" + theId,
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }).then((res) => {
+      if (res.data.code == "200") {
+        toast.success("Email Sent Sucessfully");
+      } else {
+        toast.error("Email Not Sent Sucessfully");
+      }
     });
   };
 
-  const validateOnlyDigits = (inputtxt) => /^\d*$/.test(inputtxt);
+  const handleSavePDF = () => {
+    const input = tableRef.current;
 
-  const onInputChange = (name, value) => {
-    if (name === "contact_mobile" && validateOnlyDigits(value)) {
-      setContact({ ...contact, contact_mobile: value });
-    } else {
-      setContact({ ...contact, [name]: value });
-    }
+    html2canvas(input, { scale: 2 })
+      .then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+
+        const margin = 10;
+
+        const availableWidth = pdfWidth - 2 * margin;
+
+        const ratio = Math.min(
+          availableWidth / imgWidth,
+          pdfHeight / imgHeight
+        );
+
+        const imgX = margin;
+        const imgY = 0;
+
+        pdf.addImage(
+          imgData,
+          "PNG",
+          imgX,
+          imgY,
+          imgWidth * ratio,
+          imgHeight * ratio
+        );
+        pdf.save("invoice.pdf");
+      })
+      .catch((error) => {
+        console.error("Error generating PDF: ", error);
+      });
   };
 
-  const getContactData = async () => {
-    try {
-      const res = await axios.get(
-        `${BASE_URL}/panel-fetch-contact-by-id/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+  const mergeRefs =
+    (...refs) =>
+    (node) => {
+      refs.forEach((ref) => {
+        if (typeof ref === "function") {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
         }
-      );
-
-      const contactData = res.data.contact;
-      // const contactGroup = Array.isArray(contactData.contact_group)
-      //   ? contactData.contact_group
-      //   : contactData.contact_group
-      //   ? [contactData.contact_group]
-      //   : [];
-      const contactGroup = contactData.contact_group
-        ? contactData.contact_group.split(",")
-        : [];
-
-      setContact({
-        ...contactData,
-        contact_group: contactGroup,
       });
-    } catch (error) {
-      console.error("Failed to fetch contact:", error);
-      toast.error("Failed to load contact data");
-    }
-  };
-
-  const getStateData = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/panel-fetch-state`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      setState(res.data.state || []);
-    } catch (error) {
-      console.error("Failed to fetch profile:", error);
-    }
-  };
-  useEffect(() => {
-    getContactData();
-    getStateData();
-    getGroupData();
-  }, [id]);
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    setIsButtonDisabled(true);
-
-    if (mobileError) {
-      toast.error("Please fix the errors before submitting.");
-      setIsButtonDisabled(false);
-      return;
-    }
-    const groupString = contact.contact_group.join(",");
-
-    const data = {
-      contact_name: contact.contact_name,
-      contact_mobile: contact.contact_mobile,
-      contact_email: contact.contact_email,
-      contact_address: contact.contact_address,
-      contact_group: groupString,
-      contact_pincode: contact.contact_pincode,
-      contact_state: contact.contact_state,
-      contact_status: contact.contact_status,
     };
-
-    try {
-      await axios.put(`${BASE_URL}/panel-update-contact/${id}`, data, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      toast.success("Contact Updated successfully!");
-      navigate("/Contact");
-      setContact({
-        contact_name: "",
-        contact_mobile: "",
-        contact_email: "",
-        contact_address: "",
-        contact_state: "",
-        contact_pincode: "",
-        contact_group: [],
-      });
-    } catch (error) {
-      toast.error("Error adding contact!");
-      console.error(error);
-    } finally {
-      setIsButtonDisabled(false);
-    }
-  };
-
-  const FormLabel = ({ children, required }) => (
-    <label className="block text-sm font-semibold text-black mb-1">
-      {children}
-      {required && <span className="text-red-500 ml-1">*</span>}
-    </label>
-  );
-
-  const inputClass =
-    "w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 border-green-500";
 
   return (
     <Layout>
-      <div className="bg-[#FFFFFF] p-4 rounded-lg">
-        <div className="sticky top-0 p-2 mb-4 border-b-2 border-green-500 rounded-lg bg-[#E1F5FA]">
-          <h2 className="px-5 text-black text-lg flex items-center gap-2">
-            Edit Contact
-          </h2>
-        </div>
-        <form
-          autoComplete="off"
-          onSubmit={onSubmit}
-          className="w-full max-w-7xl mx-auto p-6 space-y-8"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div>
-              <FormLabel required> Name</FormLabel>
-              <input
-                type="text"
-                name="contact_name"
-                value={contact.contact_name}
-                onChange={(e) => onInputChange(e.target.name, e.target.value)}
-                className={inputClass}
-                required
-              />
+      <div className="mt-3">
+        <div className="flex  md:flex-row justify-between items-center p-3 space-y-4 md:space-y-0">
+          {/* Page Title on the left */}
+          <div className="w-full md:w-auto">
+            {/* <PageTitle title={"Invoice View"} backLink={"/invoice"} /> */}
+          </div>
+
+          {/* Buttons and Email Handling on the right */}
+          <div className="flex sm:justify-between md:flex-row items-center space-x-4 md:space-y-0 md:space-x-4 w-full md:w-auto">
+            {/* Download Button */}
+            <button
+              variant="text"
+              className="flex items-center space-x-2"
+              onClick={handleSavePDF}
+              style={{
+                display:
+                  localStorage.getItem("user_type_id") == 4 ? "none" : "",
+              }}
+            >
+              {/* <LuDownload className="text-lg" /> */}
+              <span className="hidden sm:inline">Download</span>{" "}
+              {/* Show text only on sm and larger */}
+            </button>
+
+            {/* Email Handling Section */}
+            <div className="flex flex-col items-center text-center">
+              <a
+                onClick={(e) => sendEmail(e)}
+                className="flex items-center space-x-1 cursor-pointer"
+              >
+                {/* <MdOutlineEmail size={20} /> */}
+                <span className="hidden sm:inline">Email</span>
+              </a>
+              <small style={{ fontSize: "10px" }} className="hidden sm:inline">
+                Email Sent {invoices.invoice_email_count || 0} Times
+              </small>
             </div>
-            <div>
-              <FormLabel required>Mobile No</FormLabel>
-              <input
-                name="contact_mobile"
-                type="tel"
-                maxLength={10}
-                value={contact.contact_mobile}
-                onChange={(e) => onInputChange(e.target.name, e.target.value)}
-                className={inputClass}
-                required
-              />
-              {mobileError && (
-                <p className="text-red-500 text-sm mt-1">{mobileError}</p>
+
+            {/* Print Button */}
+            <ReactToPrint
+              trigger={() => (
+                <button variant="text" className="flex items-center space-x-2">
+                  <IoMdPrint />
+                  <span className="hidden sm:inline">Print Receipt</span>
+                </button>
               )}
-            </div>
-            {/* 
-            <FormControl sx={{ width: "100%" }}>
-              <FormLabel required>Group Name</FormLabel>
-              <Select
-                labelId="demo-group-name-label"
-                id="demo-group-name"
-                name="contact_group"
-                multiple
-                value={contact.contact_group}
-                onChange={handleGroupChange}
-                input={
-                  <OutlinedInput
-                    sx={{
-                      width: "100%",
-                      fontSize: "0.75rem",
-                      border: "1px solid #4caf50",
-                      borderRadius: "8px",
-                      "&:focus": {
-                        outline: "none",
-                        borderColor: "#42a5f5",
-                        boxShadow: "0 0 0 1px rgba(66, 165, 245, 0.5)",
-                      },
-                    }}
-                    size="small"
-                  />
-                }
-              >
-                {group.map((group) => (
-                  <MenuItem key={group.id} value={group.id}>
-                    {group.group_name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl> */}
-            <FormControl sx={{ width: "100%" }}>
-              <FormLabel required>Group Name</FormLabel>
-              <Select
-                labelId="demo-group-name-label"
-                id="demo-group-name"
-                name="contact_group"
-                multiple
-                // value={
-                //   Array.isArray(contact.contact_group)
-                //     ? contact.contact_group
-                //     : []
-                // }
-                value={contact.contact_group}
-                onChange={handleGroupChange}
-                input={
-                  <OutlinedInput
-                    sx={{
-                      width: "100%",
-                      fontSize: "0.75rem",
-                      border: "1px solid #4caf50",
-                      borderRadius: "8px",
-                      "&:focus": {
-                        outline: "none",
-                        borderColor: "#42a5f5",
-                        boxShadow: "0 0 0 1px rgba(66, 165, 245, 0.5)",
-                      },
-                    }}
-                    size="small"
-                  />
-                }
-              >
-                {group.map((group) => (
-                  <MenuItem key={group.id} value={group.id}>
-                    {group.group_name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+              content={() => componentRef.current}
+            />
+          </div>
+        </div>
 
-            <div>
-              <FormLabel required>Email</FormLabel>
-              <input
-                type="email"
-                name="contact_email"
-                value={contact.contact_email}
-                onChange={(e) => onInputChange(e.target.name, e.target.value)}
-                className={inputClass}
-                required
-              />
-            </div>
-          </div>
-          <div>
-            <div>
-              <FormLabel required>Address</FormLabel>
-              <textarea
-                name="contact_address"
-                value={contact.contact_address}
-                onChange={(e) => onInputChange(e.target.name, e.target.value)}
-                rows="3"
-                className={inputClass}
-                required
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2  gap-6">
-            <div>
-              <SelectInput
-                label="State"
-                options={state.map((item) => ({
-                  value: item.state_name,
-                  label: item.state_name,
-                }))}
-                required
-                value={contact.contact_state || ""}
-                name="contact_state"
-                onChange={(e) => onInputChange(e.target.name, e.target.value)}
-              />
+        <hr></hr>
+
+        <div
+          className="flex flex-col items-center  min-h-screen md:mx-16 p-4 bg-white "
+          ref={mergeRefs(componentRef, tableRef)}
+        >
+          {/* <div className="text-center mb-6 mt-5">
+            <h1 className="text-xl font-bold uppercase">
+              Chetana Arogyam Naturopathy Center
+            </h1>
+            <h2 className="text-lg font-medium">
+              A Unit of Acharya Sri Tulsi Mahapragya Seva Kendra Charitable
+              Trust (R)
+            </h2>
+            <h3 className="text-sm text-gray-600">
+              #51/1123rd K.M Milestone Opp Pepsi Gate Kumbalagudu Mysore Road
+              560074
+            </h3>
+          </div> */}
+
+          <div className="w-full max-w-4xl  p-4 ">
+            {/* Client Details */}
+            <div className="flex flex-col  md:flex-row md:justify-between mb-4">
+              <div>
+                <p className="font-medium">
+                  Name: <span className="font-normal"></span>
+                </p>
+                <p className="font-medium">
+                  Address: <span className="font-normal"> </span>
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">
+                  Contact Number: <span className="font-normal"></span>
+                </p>
+                <p className="font-medium">
+                  INV Ref: <span className="font-normal"> </span>
+                </p>
+              </div>
             </div>
 
-            <div>
-              <FormLabel required>Pincode</FormLabel>
-              <input
-                name="contact_pincode"
-                type="tel"
-                maxLength={6}
-                value={contact.contact_pincode}
-                onChange={(e) => onInputChange(e.target.name, e.target.value)}
-                className={inputClass}
-                required
-              />
-            </div>
-
-            <div>
-              <SelectInput
-                label="Status"
-                options={status}
-                required
-                value={contact.contact_status || ""}
-                name="contact_status"
-                onChange={(e) => onInputChange(e.target.name, e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row sm:justify-center items-center gap-4">
-            <Button
-              className="w-36 text-white bg-blue-600"
-              type="submit"
-              disabled={isButtonDisabled || mobileError}
+            <TableContainer
+              component={Paper}
+              elevation={0}
+              className="shadow-none"
             >
-              {isButtonDisabled ? "Updateting..." : "Update"}
-            </Button>
-            <Button
-              className="w-36 text-white bg-red-600"
-              onClick={() => navigate("/Contact")}
-            >
-              Back
-            </Button>
+              <Table className="table-auto border-collapse border border-gray-300">
+                <TableHead className="bg-gray-100">
+                  <TableRow>
+                    <TableCell
+                      sx={{
+                        color: "black",
+                        textAlign: "center",
+                        fontWeight: "bold",
+                        border: "1px solid #D1D5DB",
+                        paddingY: "0px",
+                        paddingX: "20px",
+                        height: "35px",
+                      }}
+                    >
+                      Services
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        textAlign: "center",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontWeight: "bold",
+                        height: "35px",
+                        borderBottom: "1px solid #D1D5DB",
+                      }}
+                    >
+                      Total
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+
+                <TableBody>
+                  {invoicesSub.map((treatment, index) => (
+                    <TableRow key={index}>
+                      <TableCell
+                        sx={{
+                          borderRight: "1px solid #D1D5DB",
+                          padding: "10px 20px 10px 5px",
+
+                          height: "35px",
+                        }}
+                      >
+                        {/* {treatment.invoice_sub_service} */}
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          textAlign: "end",
+                          fontWeight: "bold",
+                          padding: "10px 20px 10px 0px",
+                          height: "35px",
+                        }}
+                      >
+                        {" "}
+                        {/* {treatment.invoice_sub_amount}{" "} */}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TableCell
+                      sx={{
+                        fontWeight: 700,
+                        fontSize: "15px",
+                        color: "black",
+                        textAlign: "end",
+                        borderRight: "1px solid #D1D5DB",
+                        padding: "10px 20px 10px 0px",
+                        height: "35px",
+                        backgroundColor: grey[100],
+                      }}
+                    >
+                      Total
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: 700,
+                        fontSize: "15px",
+                        color: "black",
+                        textAlign: "end",
+                        padding: "10px 20px 10px 0px",
+                        height: "35px",
+                        backgroundColor: grey[100],
+                      }}
+                    >
+                      {/* {invoices.invoice_amount} */}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell
+                      sx={{
+                        fontWeight: 700,
+                        fontSize: "15px",
+                        color: "black",
+                        textAlign: "end",
+                        borderRight: "1px solid #D1D5DB",
+                        padding: "10px 20px 10px 0px",
+                        height: "35px",
+                        backgroundColor: grey[100],
+                      }}
+                    >
+                      Discount
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: 700,
+                        fontSize: "15px",
+                        color: "black",
+                        textAlign: "end",
+                        padding: "10px 20px 10px 0px",
+                        height: "35px",
+                        backgroundColor: grey[100],
+                      }}
+                    >
+                      {/* {invoices.invoice_discount} */}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell
+                      sx={{
+                        fontWeight: 700,
+                        fontSize: "15px",
+                        color: "black",
+                        textAlign: "end",
+                        borderRight: "1px solid #D1D5DB",
+                        padding: "10px 20px 10px 0px",
+                        height: "35px",
+                        backgroundColor: grey[100],
+                      }}
+                    >
+                      Grand Total
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: 700,
+                        fontSize: "15px",
+                        color: "black",
+                        textAlign: "end",
+                        padding: "10px 20px 10px 0px",
+                        height: "35px",
+                        backgroundColor: grey[100],
+                      }}
+                    >
+                      {/* {invoices.invoice_amount - invoices.invoice_discount} */}
+                    </TableCell>
+                  </TableRow>
+                </TableFooter>
+              </Table>
+            </TableContainer>
           </div>
-        </form>
+        </div>
       </div>
     </Layout>
   );
-};
-
-export default EditContact;
+}
+export default Tesst;

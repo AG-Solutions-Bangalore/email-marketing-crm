@@ -25,7 +25,7 @@ const AddCampagin = () => {
     campaign_list_group: [],
     campaign_list_individual: "",
     campaign_list_date: dayjs(""),
-    // campaign_list_date: "",
+    campaign_list_holiday: "",
     campaign_list_time: "",
   });
   const [holidays, setHolidays] = useState([]);
@@ -34,13 +34,12 @@ const AddCampagin = () => {
   const [template, setTemplate] = useState([]);
   const [group, setGroup] = useState([]);
   const [email, setEmail] = useState([]);
-
   const handleGroupChange = (event) => {
     const { value } = event.target;
     // console.log(value);
     setCampagin((prev) => ({
       ...prev,
-      campaign_list_group: value, // Store the selected groups as an array
+      campaign_list_group: value,
     }));
   };
 
@@ -57,12 +56,13 @@ const AddCampagin = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     setIsButtonDisabled(true);
-
+    const result = checkboxChecked ? "Yes" : "No";
+    console.log("Submitted:", result);
     const groupString = campagin.campaign_list_group.join(",");
     const formattedDate = dayjs(campagin.campaign_list_date).format(
       "YYYY-MM-DD"
     );
-    const groupSelected = Boolean(groupString); 
+    const groupSelected = Boolean(groupString);
     const individualSelected = Boolean(campagin.campaign_list_individual);
 
     if (groupSelected && individualSelected) {
@@ -81,9 +81,8 @@ const AddCampagin = () => {
       campaign_list_time: campagin.campaign_list_time,
       campaign_list_group: groupString,
       campaign_list_individual: campagin.campaign_list_individual,
+      campaign_list_holiday: result,
     };
-
-    // console.log(data, "dadattat");
 
     try {
       await axios.post(`${BASE_URL}/panel-create-campaign`, data, {
@@ -101,6 +100,7 @@ const AddCampagin = () => {
         contact_state: "",
         contact_pincode: "",
         campaign_list_group: "",
+        campaign_list_holiday: "",
       });
     } catch (error) {
       toast.error("Error adding contact!");
@@ -196,6 +196,7 @@ const AddCampagin = () => {
 
   const handleCheckboxChange = (e) => {
     setCheckboxChecked(e.target.checked);
+    console.log(e.target.checked);
   };
   return (
     <Layout>
@@ -292,6 +293,8 @@ const AddCampagin = () => {
               <FormControlLabel
                 control={
                   <Checkbox
+                    value={campagin.campaign_list_holiday || ""}
+                    name="campaign_list_holiday"
                     size="large"
                     checked={checkboxChecked}
                     onChange={handleCheckboxChange}
@@ -335,7 +338,7 @@ const AddCampagin = () => {
                       },
                     },
                   }}
-                  renderInput={(params) => <input {...params.inputProps} />}
+                  // renderInput={(params) => <input {...params.inputProps} />}
                 />
               </LocalizationProvider>
             </div>

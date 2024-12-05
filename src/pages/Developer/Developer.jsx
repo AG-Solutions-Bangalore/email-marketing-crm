@@ -1,8 +1,6 @@
 import React from "react";
 import Layout from "../../layout/Layout";
 import logo from "../../assets/profile/user_1.png";
-import { IconBrandWhatsapp, IconMail } from "@tabler/icons-react";
-
 const Developer = () => {
   return (
     <Layout>
@@ -40,7 +38,6 @@ const Developer = () => {
 
           {/* Contact Section */}
           <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-            {/* Email */}
             <div className="border rounded-lg p-4 text-center shadow hover:shadow-lg transition">
               <h4 className="text-sm md:text-base font-semibold text-gray-700">
                 Email
@@ -100,6 +97,8 @@ const Developer = () => {
               </p>
             </div>
           </div>
+
+        
         </div>
       </div>
     </Layout>

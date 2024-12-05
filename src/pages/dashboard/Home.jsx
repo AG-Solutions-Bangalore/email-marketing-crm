@@ -3,11 +3,7 @@ import Layout from "../../layout/Layout";
 import BASE_URL from "../../base/BaseUrl";
 import axios from "axios";
 import CountUp from "react-countup";
-import moment from "moment";
-import { Doughnut } from "react-chartjs-2";
 import { Chart, ArcElement, registerables } from "chart.js";
-import { toast } from "react-toastify";
-import { NumericFormat } from "react-number-format";
 import {
   Users,
   Building2,
@@ -27,7 +23,11 @@ import {
   DialogFooter,
   Spinner,
 } from "@material-tailwind/react";
-import { IconBrandCampaignmonitor, IconTemplate } from "@tabler/icons-react";
+import {
+  IconBrandCampaignmonitor,
+  IconBrandLine,
+  IconTemplate,
+} from "@tabler/icons-react";
 import { Center, Loader, Text } from "@mantine/core";
 
 // import { ContextPanel } from "../../utils/ContextPanel";
@@ -104,7 +104,7 @@ const Home = () => {
     {
       title: "Contact",
       value: result.contact,
-      icon: IndianRupee,
+      icon: IconBrandLine,
       color: "bg-amber-600",
     },
   ];

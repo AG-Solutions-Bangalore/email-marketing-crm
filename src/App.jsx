@@ -5,7 +5,7 @@ import SIgnUp from "./pages/auth/SIgnUp";
 import Maintenance from "./pages/maintenance/Maintenance";
 import ForgetPassword from "./pages/auth/ForgetPassword";
 import { Toaster } from "react-hot-toast";
-import "react-toastify/dist/ReactToastify.css";
+// import "react-toastify/dist/ReactToastify.css";
 import Template from "./pages/Template/Template";
 import Campagin from "./pages/Campagin/Campagin";
 import ReportUnsubscribe from "./pages/Report/ReportUnsubscribe/ReportUnsubscribe";
@@ -24,6 +24,7 @@ import AddCampagin from "./pages/Campagin/AddCampaign";
 import Developer from "./pages/Developer/Developer";
 import ReportReadForm from "./pages/Report/ReportRead/ReportReadForm";
 import CampaginIndivialView from "./pages/Campagin/CampaginIndivialView";
+import Tesst from "./teest";
 const App = () => {
   return (
     <>
@@ -45,6 +46,8 @@ const App = () => {
         {/* //EMAIL MARKETING/////// */}
 
         <Route path="/templates" element={<Template />} />
+        <Route path="/test" element={<Tesst />} />
+
         <Route path="/templates/add" element={<AddTemplate />} />
         <Route path="/templates/edit/:id" element={<EditTemplate />} />
         <Route path="/campaigns" element={<Campagin />} />
@@ -66,7 +69,6 @@ const App = () => {
         <Route path="/group/edit/:id" element={<EditGroup />} />
         {/* //Developer */}
         <Route path="/developer" element={<Developer />} />
-
       </Routes>
     </>
   );
