@@ -3,9 +3,9 @@ import toast, { Toaster } from "react-hot-toast";
 import BASE_URL from "../../base/BaseUrl";
 import { useState } from "react";
 import Logo1 from "../../assets/receipt/ag_logo.png";
-import { FaInstagram, FaPinterest, FaTwitter } from "react-icons/fa";
-import { TiSocialLinkedin, TiSocialYoutubeCircular } from "react-icons/ti";
-import { CgFacebook } from "react-icons/cg";
+// import { FaInstagram, FaPinterest, FaTwitter } from "react-icons/fa";
+// import { TiSocialLinkedin, TiSocialYoutubeCircular } from "react-icons/ti";
+// import { CgFacebook } from "react-icons/cg";
 import { Link, useNavigate } from "react-router-dom";
 import { FormLabel } from "@mui/material";
 
@@ -100,7 +100,7 @@ const ForgetPassword = () => {
             </Link>
           </div>
 
-          <div>
+          {/* <div>
             <div className="mt-6">
               <h6 className="text-center text-gray-600">Follow Us</h6>
               <div className="flex justify-center space-x-4 mt-4">
@@ -112,7 +112,7 @@ const ForgetPassword = () => {
                 <FaPinterest className="text-black hover:bg-red-500 hover:text-white p-2 rounded-full w-10 h-10" />
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </>
