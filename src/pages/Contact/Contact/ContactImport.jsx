@@ -55,15 +55,13 @@ const ContactImport = () => {
       {required && <span className="text-red-500 ml-1">*</span>}
     </label>
   );
+
   const downloadFile = () => {
-    const csvContent = `
-  Group Name,Contact Name,Email,Mobile,Address,State,Pincode
-  Test BBC,Rohit,testaaa@gmail.com,7852585285,"3rd Cross 4th Main Bangalore",Karnataka,564000
+    const csvContent = `Group Name,Contact Name,Email,Mobile,Address,State,Pincode
+Test BBC,Rohit,testaaa@gmail.com,7852585285,"3rd Cross 4th Main Bangalore",Karnataka,564000
     `.trim();
 
-    const encodedUri = `data:text/csv;charset=utf-8,${encodeURIComponent(
-      csvContent
-    )}`;
+    const encodedUri = `data:text/csv;charset=utf-8,${encodeURIComponent(csvContent)}`;
 
     const link = document.createElement("a");
     link.href = encodedUri;
@@ -73,8 +71,7 @@ const ContactImport = () => {
     document.body.removeChild(link);
   };
 
-  const inputClass =
-    "w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 border-green-500";
+  const inputClass = `w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 border-green-500 ${isButtonDisabled ? "bg-gray-200 cursor-not-allowed" : ""}`;
 
   return (
     <Layout>
@@ -98,6 +95,7 @@ const ContactImport = () => {
                 className={inputClass}
                 required
                 accept=".csv"
+                disabled={isButtonDisabled}
               />
             </div>
 

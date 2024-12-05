@@ -39,7 +39,12 @@ const ForgetPassword = () => {
 
   const inputClass =
     "w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 border-green-500";
-
+  const FormLabel = ({ children, required }) => (
+    <label className="block text-sm font-semibold text-black mb-1">
+      {children}
+      {required && <span className="text-red-500 ml-1">*</span>}
+    </label>
+  );
   return (
     <>
       <Toaster
@@ -62,17 +67,6 @@ const ForgetPassword = () => {
             Enter your email to reset your password.
           </Typography>
           <form onSubmit={onResetPassword} className="space-y-6">
-            {/* <div>
-              <FormLabel required>Username</FormLabel>
-              <input
-                type="text"
-                name="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className={inputClass}
-                required
-              />
-            </div> */}
             <div>
               <FormLabel required>Email</FormLabel>
               <input
@@ -86,7 +80,7 @@ const ForgetPassword = () => {
             </div>
             <div className="flex justify-center ">
               <button
-                className=" text-center text-sm font-[400 ] cursor-pointer hover:animate-pulse w-36 text-white bg-blue-600 hover:bg-green-700 p-2 rounded-lg shadow-md"
+                className=" text-center text-sm font-[400] cursor-pointer hover:animate-pulse w-36 text-white bg-blue-600 hover:bg-green-700 p-2 rounded-lg shadow-md"
                 type="submit"
               >
                 {" "}

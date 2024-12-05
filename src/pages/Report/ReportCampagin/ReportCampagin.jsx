@@ -5,7 +5,6 @@ import BASE_URL from "../../../base/BaseUrl";
 import toast from "react-hot-toast";
 import { Button } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
-import SelectInput from "../../../components/common/SelectInput";
 
 const ReportCampagin = () => {
   const today = new Date();
@@ -17,7 +16,7 @@ const ReportCampagin = () => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-  const [campaign , setCampaign] = useState({
+  const [campaign, setCampaign] = useState({
     from_date: formatDate(startOfMonth),
     to_date: formatDate(today),
   });
@@ -36,15 +35,32 @@ const ReportCampagin = () => {
     setIsButtonDisabled(true);
 
     const data = {
-      from_date: campaign .from_date,
-      to_date: campaign .to_date,
+      from_date: campaign.from_date,
+      to_date: campaign.to_date,
     };
     try {
-      await axios.post(`${BASE_URL}/panel-fetch-campaign-sent-report`, data, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axios.post(
+        `${BASE_URL}/panel-fetch-campaign-sent-report`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (
+        response.data &&
+        response.data.campaign &&
+        response.data.campaign.length > 0
+      ) {
+        navigate("/report/campaign/view", {
+          state: { ReadData: response.data.campaign },
+        });
+      } else {
+        toast.error("No campaign data available or empty .");
+        console.error("No campaign data available or empty array");
+      }
     } catch (error) {
       toast.error("Error adding campaign!");
       console.error(error);
@@ -65,9 +81,8 @@ const ReportCampagin = () => {
 
   const handleExport = async () => {
     const data = {
-      from_date: campaign .from_date,
-      to_date: campaign .to_date,
-
+      from_date: campaign.from_date,
+      to_date: campaign.to_date,
     };
     try {
       const token = localStorage.getItem("token");
@@ -84,13 +99,13 @@ const ReportCampagin = () => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "Visted_list.csv");
+      link.setAttribute("download", "Campaign_list.csv");
       document.body.appendChild(link);
       link.click();
 
-      toast.success("Visted list exported successfully!");
+      toast.success("Campaign list exported successfully!");
     } catch (error) {
-      toast.error("Failed to export Visted list.");
+      toast.error("Failed to export Campaign list.");
       console.error("Export error:", error);
     }
   };
@@ -114,7 +129,7 @@ const ReportCampagin = () => {
               <input
                 type="date"
                 name="from_date"
-                value={campaign .from_date}
+                value={campaign.from_date}
                 onChange={(e) => onInputChange(e.target.name, e.target.value)}
                 className={inputClass}
                 required
@@ -125,7 +140,7 @@ const ReportCampagin = () => {
               <input
                 type="date"
                 name="to_date"
-                value={campaign .to_date}
+                value={campaign.to_date}
                 onChange={(e) => onInputChange(e.target.name, e.target.value)}
                 className={inputClass}
                 required

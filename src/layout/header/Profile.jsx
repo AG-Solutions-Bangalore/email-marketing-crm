@@ -20,6 +20,7 @@ import BASE_URL from "../../base/BaseUrl";
 import toast from "react-hot-toast";
 import { IconInfoOctagon } from "@tabler/icons-react";
 import SelectInput from "../../components/common/SelectInput";
+import { IconSettings } from "@tabler/icons-react";
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = React.useState(null);
   const [openModal, setOpenModal] = React.useState(false);
@@ -235,6 +236,12 @@ const Profile = () => {
             <IconMail width={20} />
           </ListItemIcon>
           <ListItemText>Change Password</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => navigate("/setting")}>
+          <ListItemIcon>
+            <IconSettings width={20} />
+          </ListItemIcon>
+          <ListItemText>Setting</ListItemText>
         </MenuItem>
 
         <Box mt={1} py={1} px={2}>

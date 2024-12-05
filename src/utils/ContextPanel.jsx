@@ -72,6 +72,10 @@ const AppProvider = ({ children }) => {
           "/group/edit",
           "/developer",
           "/test",
+          "/setting",
+          "/report/view",
+          "/report/campaign/view",
+          "/report/visted",
         ];
 
         const isAllowedPath = allowedPath.some((path) =>

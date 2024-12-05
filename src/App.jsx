@@ -24,7 +24,10 @@ import AddCampagin from "./pages/Campagin/AddCampaign";
 import Developer from "./pages/Developer/Developer";
 import ReportReadForm from "./pages/Report/ReportRead/ReportReadForm";
 import CampaginIndivialView from "./pages/Campagin/CampaginIndivialView";
-import Tesst from "./teest";
+import Setting from "./pages/Setting/Setting";
+import ReportReadView from "./pages/Report/ReportRead/ReportView";
+import ReportCampaginView from "./pages/Report/ReportCampagin/ReportCampaginView";
+import ReportVisitedView from "./pages/Report/ReportVisited/ReportVisitedView";
 const App = () => {
   return (
     <>
@@ -46,7 +49,6 @@ const App = () => {
         {/* //EMAIL MARKETING/////// */}
 
         <Route path="/templates" element={<Template />} />
-        <Route path="/test" element={<Tesst />} />
 
         <Route path="/templates/add" element={<AddTemplate />} />
         <Route path="/templates/edit/:id" element={<EditTemplate />} />
@@ -54,9 +56,13 @@ const App = () => {
         <Route path="/campaigns/add" element={<AddCampagin />} />
         <Route path="/campaigns/view/:id" element={<CampaginIndivialView />} />
         <Route path="/report/read" element={<ReportReadForm />} />
+        <Route path="/report/view" element={<ReportReadView />} />
         <Route path="/report/unsubscribe" element={<ReportUnsubscribe />} />
-        <Route path="/report/visted" element={<ReportVisted />} />
+
+        <Route path="/report/visted" element={<ReportVisted/>} />
+        <Route path="/report/visted/view" element={<ReportVisitedView />} />
         <Route path="/report/campaign" element={<ReportCampagin />} />
+        <Route path="/report/campaign/view" element={<ReportCampaginView />} />
         <Route path="/Contact" element={<Contact />} />
         <Route path="/Contact/add" element={<AddContact />} />
         <Route path="/Contact/edit/:id" element={<EditContact />} />
@@ -69,6 +75,9 @@ const App = () => {
         <Route path="/group/edit/:id" element={<EditGroup />} />
         {/* //Developer */}
         <Route path="/developer" element={<Developer />} />
+
+        {/* //setting */}
+        <Route path="/setting" element={<Setting />} />
       </Routes>
     </>
   );

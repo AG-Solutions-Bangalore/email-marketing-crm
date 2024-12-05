@@ -56,34 +56,19 @@ const ReportUnsubscribe = () => {
         Cell: ({ row }) => row.index + 1,
       },
       {
-        accessorKey: "indicomp_full_name",
+        accessorKey: "contact_name",
         header: "Name",
         size: 150,
       },
       {
-        accessorKey: "indicomp_full_name",
+        accessorKey: "contact_email",
         header: "Email",
         size: 150,
       },
       {
-        accessorKey: "indicomp_full_name",
+        accessorKey: "contact_mobile",
         header: "Mobile",
         size: 150,
-      },
-
-      {
-        id: "action",
-        header: "Action",
-        size: 50,
-        enableHiding: false,
-        Cell: ({ row }) => (
-          <Flex gap="xs">
-            <IconEdit
-              className="cursor-pointer text-blue-600 hover:text-blue-800"
-              title="Edit"
-            />
-          </Flex>
-        ),
       },
     ],
     []
@@ -122,13 +107,6 @@ const ReportUnsubscribe = () => {
     initialState: { showGlobalFilter: true },
     mantineTableContainerProps: { sx: { maxHeight: "400px" } },
     renderTopToolbar: ({ table }) => {
-      const handleActivate = () => {
-        const selectedRows = table.getSelectedRowModel().flatRows;
-        selectedRows.forEach((row) => {
-          alert(`Activating: ${row.getValue("indicomp_full_name")}`);
-        });
-      };
-
       return (
         <Flex p="md" justify="space-between">
           <Text size="xl" weight={700}>
@@ -149,9 +127,6 @@ const ReportUnsubscribe = () => {
             >
               Download
             </Button>
-            {/* <Button className="w-36 text-white bg-blue-600 !important hover:bg-violet-400 hover:animate-pulse">
-              Add
-            </Button> */}
           </Flex>
         </Flex>
       );
