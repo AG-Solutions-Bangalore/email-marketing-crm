@@ -23,9 +23,10 @@ import {
 } from "@tabler/icons-react";
 import toast from "react-hot-toast";
 import axios from "axios";
+import moment from "moment";
 const Table_Head = [
   { label: "Campagin Date" },
-  { label: "Campagin Time" },
+  // { label: "Campagin Time" },
   { label: "Template Name" },
   { label: "Campagin Individual" },
   { label: "Campagin Subject" },
@@ -227,16 +228,16 @@ function ReportReadView() {
                           borderBottom: "1px solid #ddd",
                         }}
                       >
-                        {invoice.campaign_date}
+                        {moment(invoice.campaign_date).format("DD-MM-YYYY")}
                       </TableCell>
-                      <TableCell
+                      {/* <TableCell
                         sx={{
                           textAlign: "center",
                           borderBottom: "1px solid #ddd",
                         }}
                       >
                         {invoice.campaign_time}
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell
                         sx={{
                           textAlign: "center",

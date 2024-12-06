@@ -68,8 +68,8 @@ const CampaginIndivialView = () => {
       },
 
       {
-        accessorKey: "campaign_time",
-        header: "Time",
+        accessorKey: "campaign_list_name",
+        header: "Campagin List Name",
         size: 100,
       },
       {
