@@ -1,200 +1,207 @@
-import React, { useEffect, useMemo, useState } from "react";
-import Layout from "../../../layout/Layout";
+import React, { useState } from "react";
+import Layout from "../../layout/Layout";
 import axios from "axios";
-import BASE_URL from "../../../base/BaseUrl";
-import {
-  MantineReactTable,
-  useMantineReactTable,
-  MRT_GlobalFilterTextInput,
-  MRT_ToggleFiltersButton,
-} from "mantine-react-table";
-import { Box, Button, Center, Flex, Loader, Text } from "@mantine/core";
-import { IconEdit } from "@tabler/icons-react";
-// import { toast } from "react-hot-toastify";
-// import "react-toastify/dist/ReactToastify.css";
+import BASE_URL from "../../base/BaseUrl";
+import { IconInfoCircle } from "@tabler/icons-react";
+import toast from "react-hot-toast";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { Button } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 
-const Contact = () => {
-  const [contactData, setContactData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+const AddTemplate = () => {
+  const [template, setTemplate] = useState({
+    template_name: "",
+    template_design: "", // For HTML content
+    template_subject: "",
+    template_url: "",
+  });
+
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [isHtmlView, setIsHtmlView] = useState(false); // State for toggling HTML view
   const navigate = useNavigate();
 
-  const fetchContactData = async () => {
-    setIsLoading(true);
+  const onInputChange = (name, value) => {
+    setTemplate((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setIsButtonDisabled(true);
+
+    const data = {
+      template_name: template.template_name,
+      template_subject: template.template_subject,
+      template_design: template.template_design, // Already in HTML
+      template_url: template.template_url,
+    };
+
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${BASE_URL}/panel-fetch-contact-list`, {
+      await axios.post(`${BASE_URL}/panel-create-template`, data, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      setContactData(response.data?.contact || []);
+      toast.success("Template Created Successfully");
+      navigate("/templates");
+      setTemplate({
+        template_name: "",
+        template_subject: "",
+        template_design: "", // Reset HTML content
+        template_url: "",
+      });
     } catch (error) {
-      console.error("Error fetching contact data:", error);
+      toast.error("Error creating template");
+      console.error(error);
     } finally {
-      setIsLoading(false);
+      setIsButtonDisabled(false);
     }
   };
 
-  useEffect(() => {
-    fetchContactData();
-  }, []);
-
-  const handleExport = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios({
-        url: `${BASE_URL}/panel-export-contact`,
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        responseType: "blob", // Ensure file download format
-      });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "contact_list.csv");
-      document.body.appendChild(link);
-      link.click();
-
-      toast.success("Contact list exported successfully!");
-    } catch (error) {
-      toast.error("Failed to export contact list.");
-      console.error("Export error:", error);
-    }
-  };
-
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: "index",
-        header: "#",
-        size: 50,
-        enableColumnFilter: false,
-        enableSorting: false,
-        Cell: ({ row }) => row.index + 1,
-      },
-      {
-        accessorKey: "group_names",
-        header: "Group Name",
-        size: 150,
-      },
-      {
-        accessorKey: "contact_name",
-        header: "Name",
-        size: 150,
-      },
-      {
-        accessorKey: "contact_email",
-        header: "Email",
-        size: 50,
-      },
-      {
-        accessorKey: "contact_mobile",
-        header: "Mobile",
-        size: 50,
-      },
-      {
-        accessorKey: "contact_status",
-        header: "Status",
-        size: 50,
-      },
-      {
-        id: "actions",
-        header: "Action",
-        size: 50,
-        enableHiding: false,
-        Cell: ({ row }) => (
-          <Flex gap="xs">
-            <IconEdit
-              className="cursor-pointer text-blue-600 hover:text-blue-800"
-              title="Edit"
-              onClick={() => navigate(`/Contact/edit/${row.original.id}`)}
-            />
-          </Flex>
-        ),
-      },
-    ],
-    [navigate]
+  const FormLabel = ({ children, required }) => (
+    <label className="block text-sm font-semibold text-black mb-1">
+      {children}
+      {required && <span className="text-red-500 ml-1">*</span>}
+    </label>
   );
 
-  const table = useMantineReactTable({
-    columns,
-    data: contactData,
-    enableColumnActions: false,
-    enableStickyHeader: true,
-    enableStickyFooter: true,
-    initialState: { showGlobalFilter: true },
-    mantineTableContainerProps: { sx: { maxHeight: "400px" } },
-    renderTopToolbar: ({ table }) => (
-      <Flex
-        p="md"
-        justify="space-between"
-        sx={{
-          overflowX: "auto",
-          maxWidth: "100%",
-        }}
-        flexWrap="wrap"
-      >
-        <Text size="xl" weight={700}>
-          Contact List
-        </Text>
-        <Flex gap="sm">
-          <MRT_GlobalFilterTextInput table={table} />
-          <MRT_ToggleFiltersButton table={table} />
-          <Button
-            onClick={() => navigate("/Contact/import")}
-            sx={{
-              backgroundColor: "green !important",
-              color: "white",
-              "&:hover": {
-                backgroundColor: "red  !important",
-              },
-            }}
-          >
-            Import
-          </Button>
-          <Button
-            onClick={handleExport}
-            sx={{
-              backgroundColor: "green !important",
-              color: "white",
-              "&:hover": {
-                backgroundColor: "red  !important",
-              },
-            }}
-          >
-            Export
-          </Button>
-          <Button
-            className="w-36 text-white bg-blue-600 !important hover:bg-violet-400 hover:animate-pulse"
-            onClick={() => navigate("/Contact/add")}
-          >
-            Add
-          </Button>
-        </Flex>
-      </Flex>
-    ),
-  });
+  const inputClass =
+    "w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 border-green-500";
 
   return (
     <Layout>
-      <Box className="max-w-screen">
-        {isLoading ? (
-          <Center style={{ height: "70vh", flexDirection: "column" }}>
-            <Loader size="lg" variant="dots" color="blue" />
-            <Text mt="md" color="gray" size="lg">
-              Loading, please wait...
-            </Text>
-          </Center>
-        ) : (
-          <MantineReactTable table={table} />
-        )}
-      </Box>
+      <div className="bg-[#FFFFFF] p-2 rounded-lg">
+        <div className="sticky top-0 p-2 mb-4 border-b-2 border-green-500 rounded-lg bg-[#E1F5FA]">
+          <h2 className="px-5 text-[black] text-lg flex flex-row justify-between items-center rounded-xl p-2">
+            <div className="flex items-center gap-2">
+              <IconInfoCircle className="w-4 h-4" />
+              <span>Template Add</span>
+            </div>
+          </h2>
+        </div>
+        <hr />
+
+        <form
+          autoComplete="off"
+          onSubmit={onSubmit}
+          className="w-full max-w-7xl mx-auto p-6 space-y-8"
+        >
+          <div className="grid grid-cols-1 p-4 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div>
+              <FormLabel required>Template Name</FormLabel>
+              <input
+                type="text"
+                name="template_name"
+                value={template.template_name}
+                onChange={(e) => onInputChange(e.target.name, e.target.value)}
+                className={inputClass}
+                required
+              />
+            </div>
+
+            <div>
+              <FormLabel required>Subject</FormLabel>
+              <input
+                type="text"
+                name="template_subject"
+                value={template.template_subject}
+                onChange={(e) => onInputChange(e.target.name, e.target.value)}
+                className={inputClass}
+                required
+              />
+            </div>
+            <div>
+              <FormLabel>Template URL</FormLabel>
+              <input
+                type="text"
+                name="template_url"
+                value={template.template_url}
+                onChange={(e) => onInputChange(e.target.name, e.target.value)}
+                className={inputClass}
+              />
+            </div>
+          </div>
+
+          <div className="editor-container">
+            <FormLabel required>Template Design</FormLabel>
+
+            {/* Toggle HTML View or ReactQuill Editor */}
+            <Button
+              onClick={() => setIsHtmlView(!isHtmlView)}
+              className="mb-4 text-white bg-blue-600"
+            >
+              {isHtmlView ? "Switch to Editor" : "Switch to HTML View"}
+            </Button>
+
+            {isHtmlView ? (
+              // Allow copy-pasting HTML content in the textarea
+              <div
+                className="p-4 bg-gray-100 border rounded"
+                style={{
+                  minHeight: "200px",
+                  overflowY: "auto",
+                  whiteSpace: "pre-wrap", // Ensures whitespace is respected
+                  wordBreak: "break-word", // Breaks long words to avoid overflow
+                }}
+              >
+                <textarea
+                  value={template.template_design}
+                  onChange={(e) =>
+                    setTemplate((prev) => ({
+                      ...prev,
+                      template_design: e.target.value,
+                    }))
+                  }
+                  placeholder="Paste your HTML code here"
+                  className="w-full h-full bg-gray-100 p-2 border rounded"
+                  style={{ minHeight: "200px" }}
+                />
+              </div>
+            ) : (
+              // Use ReactQuill for editing
+              <ReactQuill
+                theme="snow"
+                value={template.template_design}
+                onChange={(content) =>
+                  setTemplate((prev) => ({ ...prev, template_design: content }))
+                }
+                className="editor"
+                placeholder="Type your content here..."
+              />
+            )}
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:justify-center items-center gap-4">
+            <Button
+              className="w-full sm:w-36 text-white bg-blue-600"
+              type="submit"
+              disabled={isButtonDisabled}
+            >
+              {isButtonDisabled ? "Submitting..." : "Submit"}
+            </Button>
+            <Button
+              className="w-full sm:w-36 text-white bg-red-600"
+              onClick={() => navigate("/templates")}
+            >
+              Back
+            </Button>
+          </div>
+        </form>
+      </div>
+
+      <style>
+        {`
+          .editor {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+          }
+        `}
+      </style>
     </Layout>
   );
 };
 
-export default Contact;
+export default AddTemplate;
