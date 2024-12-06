@@ -58,26 +58,36 @@ const Campagin = () => {
         size: 150,
         Cell: ({ value }) => moment(value).format("DD-MM-YYYY"),
       },
-      // {
-      //   accessorKey: "campaign_list_time",
-      //   header: "Time",
-      //   size: 150,
-      // },
+
       {
         accessorKey: "template_name",
         header: "Template Name",
         size: 150,
       },
       {
-        accessorKey: "group_name",
+        accessorKey: "group_names",
         header: "Group/Individual",
         size: 50,
       },
+      {
+        accessorKey: "total_campaigns",
+        header: "Total/Pending",
+        size: 150,
+        Cell: ({ row }) => {
+          const totalCampaigns = row.original.total_campaigns ;
+          const pendingCampaigns = row.original.pending_campaigns ;
+          return (
+            <span>{`${totalCampaigns} / ${pendingCampaigns}`}</span>
+          );
+        },
+      },
+
       {
         accessorKey: "campaign_list_status",
         header: "Status",
         size: 50,
       },
+
       {
         id: "id",
         header: "Action",

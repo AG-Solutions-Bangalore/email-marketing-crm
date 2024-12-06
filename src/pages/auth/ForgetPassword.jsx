@@ -8,6 +8,7 @@ import Logo1 from "../../assets/receipt/ag_logo.png";
 // import { CgFacebook } from "react-icons/cg";
 import { Link, useNavigate } from "react-router-dom";
 import { FormLabel } from "@mui/material";
+import axios from "axios";
 
 const ForgetPassword = () => {
   const [email, setEmail] = useState("");
@@ -15,25 +16,20 @@ const ForgetPassword = () => {
 
   const onResetPassword = async (e) => {
     e.preventDefault();
-    const data = { email: email };
+
+    const formData = new FormData();
+    formData.append("email", email);
 
     try {
-      const response = await fetch(`${BASE_URL}/panel-send-password`, {
-        method: "POST",
-
-        body: JSON.stringify(data),
-      });
-
-      const responseData = await response.json();
-
-      if (responseData.Status === "200") {
+      const res = await axios.post(`${BASE_URL}/panel-send-password`, formData);
+      if (res.data.code == "200") {
         toast.success("New Password Sent to your Email");
       } else {
         toast.error("Email not sent. Please try again.");
       }
     } catch (error) {
-      toast.error("An error occurred.");
-      console.error("Error:", error); // Optional: Log the error for debugging
+      toast.error("An error occurred during login.");
+      console.error("Error:", error);
     }
   };
 
