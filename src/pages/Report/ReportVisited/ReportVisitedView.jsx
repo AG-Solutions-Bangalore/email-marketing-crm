@@ -23,6 +23,7 @@ import {
 } from "@tabler/icons-react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import moment from "moment";
 const Table_Head = [
   { label: "Campagin Date" },
   { label: "Campagin Subject" },
@@ -224,7 +225,7 @@ function ReportVisitedView() {
                           borderBottom: "1px solid #ddd",
                         }}
                       >
-                        {invoice.campaign_date}
+                        {moment(invoice.campaign_date).format("DD-MM-YYYY")}
                       </TableCell>
                       <TableCell
                         sx={{

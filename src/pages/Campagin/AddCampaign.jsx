@@ -27,6 +27,7 @@ const AddCampagin = () => {
     campaign_list_date: dayjs(""),
     campaign_list_holiday: "",
     campaign_list_time: "",
+    campaign_list_name: "",
   });
   const [holidays, setHolidays] = useState([]);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -82,6 +83,7 @@ const AddCampagin = () => {
       campaign_list_group: groupString,
       campaign_list_individual: campagin.campaign_list_individual,
       campaign_list_holiday: result,
+      campaign_list_name: campagin.campaign_list_name,
     };
 
     try {
@@ -179,6 +181,20 @@ const AddCampagin = () => {
       console.error("Failed to fetch profile:", error);
     }
   };
+  const onTemplateChange = (name, value) => {
+    const templateId = Number(value);
+    const selectedTemplate = template.find((item) => item.id === templateId);
+
+    if (selectedTemplate) {
+      setCampagin((prev) => ({
+        ...prev,
+        [name]: value,
+        campaign_list_subject: selectedTemplate.template_subject,
+      }));
+    } else {
+      console.error("Template not found for id:", templateId);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -211,7 +227,17 @@ const AddCampagin = () => {
           onSubmit={onSubmit}
           className="w-full max-w-7xl mx-auto p-6 space-y-8"
         >
-          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-6">
+            <div>
+              <FormLabel required>Campagin Name</FormLabel>
+              <input
+                name="campaign_list_name"
+                value={campagin.campaign_list_name}
+                onChange={(e) => onInputChange(e.target.name, e.target.value)}
+                className={inputClass}
+                required
+              />
+            </div>
             <div>
               <SelectInput
                 label="Template"
@@ -222,7 +248,9 @@ const AddCampagin = () => {
                 required
                 value={campagin.campaign_list_template_id || ""}
                 name="campaign_list_template_id"
-                onChange={(e) => onInputChange(e.target.name, e.target.value)}
+                onChange={(e) =>
+                  onTemplateChange(e.target.name, e.target.value)
+                }
               />
             </div>
             <div>
@@ -231,8 +259,9 @@ const AddCampagin = () => {
                 name="campaign_list_subject"
                 value={campagin.campaign_list_subject}
                 onChange={(e) => onInputChange(e.target.name, e.target.value)}
-                className={inputClass}
+                className={`${inputClass} cursor-not-allowed`}
                 required
+                disabled
               />
             </div>
           </div>
