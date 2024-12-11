@@ -56,7 +56,11 @@ const Campagin = () => {
         accessorKey: "campaign_list_date",
         header: "Date",
         size: 150,
-        Cell: ({ value }) => moment(value).format("DD-MM-YYYY"),
+        Cell: ({ row }) => {
+          const date = row.original.campaign_list_date; 
+          const date1 = moment(date).format("DD-MM-YYYY");
+          return date1;
+        },
       },
 
       {
@@ -68,17 +72,27 @@ const Campagin = () => {
         accessorKey: "group_names",
         header: "Group/Individual",
         size: 50,
+
+        Cell: ({ row }) => {
+          const Groupname = row.original.group_names;
+          const IndividualName = row.original.campaign_list_individual;
+
+          if (Groupname == null) {
+            return IndividualName;
+          }
+
+          return <span>{`${IndividualName}`}</span>;
+        },
       },
+
       {
         accessorKey: "total_campaigns",
         header: "Total/Pending",
         size: 150,
         Cell: ({ row }) => {
-          const totalCampaigns = row.original.total_campaigns ;
-          const pendingCampaigns = row.original.pending_campaigns ;
-          return (
-            <span>{`${totalCampaigns} / ${pendingCampaigns}`}</span>
-          );
+          const totalCampaigns = row.original.total_campaigns;
+          const pendingCampaigns = row.original.pending_campaigns;
+          return <span>{`${totalCampaigns} / ${pendingCampaigns}`}</span>;
         },
       },
 

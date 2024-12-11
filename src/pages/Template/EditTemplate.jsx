@@ -9,6 +9,7 @@ import "react-quill/dist/quill.snow.css";
 import { Button } from "@mantine/core";
 import { useNavigate, useParams } from "react-router-dom";
 import SelectInput from "../../components/common/SelectInput";
+import { CKEditor } from "ckeditor4-react";
 
 const status = [
   { value: "Active", label: "Active" },
@@ -24,10 +25,11 @@ const EditTemplate = () => {
     template_status: "",
   });
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
   const { id } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-
+  const [fetchtemplatedata, setFetchTemplateData] = useState(false);
   const getTemplateData = async () => {
     try {
       const res = await axios.get(
@@ -38,15 +40,16 @@ const EditTemplate = () => {
           },
         }
       );
-
+      setFetchTemplateData(true);
       if (res.data?.template) {
         setTemplate(res.data.template);
       } else {
         throw new Error("Template data is missing");
       }
     } catch (error) {
-      console.error("Failed to fetch profile:", error);
-      toast.error("Failed to load profile data");
+      console.error("Failed to fetch template:", error);
+      toast.error("Failed to load template data");
+      setFetchTemplateData(false);
     }
   };
   useEffect(() => {
@@ -57,16 +60,12 @@ const EditTemplate = () => {
     setTemplate((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleEditorChange = (value) => {
-    // console.log("Editor Content:", value);
-    setTemplate((prevTemplate) => ({
-      ...prevTemplate,
-      template_design: value,
-    }));
-  };
-
   const onSubmit = async (e) => {
     e.preventDefault();
+    if (!template.template_design.trim()) {
+      toast.error("Template Design cannot be empty!");
+      return;
+    }
     setIsButtonDisabled(true);
     const data = {
       template_name: template.template_name,
@@ -100,35 +99,6 @@ const EditTemplate = () => {
 
   const inputClass =
     "w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 border-green-500";
-  const modules = {
-    toolbar: [
-      [{ font: [] }, { size: [] }],
-      [
-        { header: "1" },
-        { header: "2" },
-        "bold",
-        "italic",
-        "underline",
-        "strike",
-      ],
-      [
-        { align: [] },
-        { list: "ordered" },
-        { list: "bullet" },
-        "link",
-        "blockquote",
-      ],
-      ["link", "image", "video"],
-      [{ color: [] }, { background: [] }],
-      ["code-block", "blockquote"],
-      ["clean"],
-    ],
-    history: {
-      delay: 1000,
-      maxStack: 10,
-      userOnly: true,
-    },
-  };
 
   return (
     <Layout>
@@ -178,27 +148,32 @@ const EditTemplate = () => {
               />
             </div>
             <div>
-              <FormLabel required>Template URL</FormLabel>
+              <FormLabel>Template URL</FormLabel>
               <input
                 type="text"
                 name="template_url"
                 value={template.template_url}
                 onChange={(e) => onInputChange(e.target.name, e.target.value)}
                 className={inputClass}
-                required
               />
             </div>
           </div>
           <div className="editor-container">
             <FormLabel required>Template Design</FormLabel>
-
-            <ReactQuill
-              value={template.template_design}
-              onChange={handleEditorChange}
-              modules={modules}
-              theme="snow"
-              placeholder="Type your content here..."
-            />
+            {fetchtemplatedata && (
+              <CKEditor
+                initData={template.template_design}
+                name="template_design"
+                value={template.template_design}
+                onChange={(event) => {
+                  const editorData = event.editor.getData();
+                  onInputChange("template_design", editorData);
+                }}
+                config={{
+                  versionCheck: false,
+                }}
+              />
+            )}
           </div>
           <div className="flex flex-col sm:flex-row sm:justify-center items-center gap-4">
             <Button

@@ -4,52 +4,27 @@ import axios from "axios";
 import BASE_URL from "../../base/BaseUrl";
 import { IconInfoCircle } from "@tabler/icons-react";
 import toast from "react-hot-toast";
-import ReactQuill from "react-quill"; // Import React Quill
-import "react-quill/dist/quill.snow.css"; // Import React Quill styles
+// import ReactQuill from "react-quill";
+// import "react-quill/dist/quill.snow.css";
+// import AceEditor from "react-ace";
+// import "ace-builds/src-noconflict/mode-html";
+// import "ace-builds/src-noconflict/theme-github";
+// import "ace-builds/src-noconflict/theme-dracula";
+// import "ace-builds/src-noconflict/ext-language_tools";
+// import "ace-builds/src-noconflict/snippets/html";
 import { Button } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
+import { CKEditor } from "ckeditor4-react";
 
 const AddTemplate = () => {
   const [template, setTemplate] = useState({
     template_name: "",
-    template_design: "",
+    template_design: "", // For HTML content
     template_subject: "",
     template_url: "",
   });
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const modules = {
-    toolbar: [
-      [{ font: [] }, { size: [] }],
-      [
-        { header: "1" },
-        { header: "2" },
-        "bold",
-        "italic",
-        "underline",
-        "strike",
-      ],
-      [
-        { align: [] },
-        { list: "ordered" },
-        { list: "bullet" },
-        "link",
-        "blockquote",
-      ],
-      ["link", "image", "video"],
-      [{ color: [] }, { background: [] }],
-      ["code-block", "blockquote"],
-      ["clean"],
-    ],
-    clipboard: {
-      matchVisual: false,
-    },
-    history: {
-      delay: 1000,
-      maxStack: 10,
-      userOnly: true,
-    },
-  };
   const navigate = useNavigate();
 
   const onInputChange = (name, value) => {
@@ -59,18 +34,14 @@ const AddTemplate = () => {
     }));
   };
 
-  // const [editorValue, setEditorValue] = useState("");
-
-  const handleEditorChange = (value) => {
-    // console.log("Editor Content:", value);
-    setTemplate((prevTemplate) => ({
-      ...prevTemplate,
-      template_design: value,
-    }));
-  };
   const onSubmit = async (e) => {
     e.preventDefault();
+    if (!template.template_design.trim()) {
+      toast.error("Template Design cannot be empty!");
+      return;
+    }
     setIsButtonDisabled(true);
+
     const data = {
       template_name: template.template_name,
       template_subject: template.template_subject,
@@ -101,7 +72,7 @@ const AddTemplate = () => {
   };
 
   const FormLabel = ({ children, required }) => (
-    <label className="block text-sm font-semibold text-black mb-1 ">
+    <label className="block text-sm font-semibold text-black mb-1">
       {children}
       {required && <span className="text-red-500 ml-1">*</span>}
     </label>
@@ -109,7 +80,7 @@ const AddTemplate = () => {
 
   const inputClass =
     "w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 border-green-500";
-
+  console.log(template.template_design, "template");
   return (
     <Layout>
       <div className="bg-[#FFFFFF] p-2 rounded-lg">
@@ -165,26 +136,29 @@ const AddTemplate = () => {
           </div>
           <div className="editor-container">
             <FormLabel required>Template Design</FormLabel>
-            <ReactQuill
+
+            <CKEditor
+              initData="<p>Fill the Content Here</p>"
+              config={{
+                versionCheck: false,
+              }}
               value={template.template_design}
-              name="template_design"
-              onChange={handleEditorChange}
-              modules={modules}
-              theme="snow"
-              placeholder="Type your content here..."
+              onChange={(event) => {
+                console.log(event);
+                onInputChange("template_design", event.editor.getData());
+              }}
             />
           </div>
-
           <div className="flex flex-col sm:flex-row sm:justify-center items-center gap-4">
             <Button
-              className="w-36 text-white bg-blue-600"
+              className="w-full sm:w-36 text-white bg-blue-600"
               type="submit"
               disabled={isButtonDisabled}
             >
               {isButtonDisabled ? "Submitting..." : "Submit"}
             </Button>
             <Button
-              className="w-36 text-white bg-red-600"
+              className="w-full sm:w-36 text-white bg-red-600"
               onClick={() => navigate("/templates")}
             >
               Back
@@ -192,20 +166,19 @@ const AddTemplate = () => {
           </div>
         </form>
       </div>
+
       <style>
         {`
-          .editor-container .ql-editor {
-            min-height: 20rem;
-            max-height: 40rem;
-            overflow-y: auto;
-            overflow-x: auto;
+          .editor {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
           }
-          @media (max-width: 768px) {
-            .editor-container .ql-editor {
-              min-height: 15rem;
-              max-height: 30rem;
-            }
+
+          .editor-wrapper {
+            min-height: 200px;
           }
+
+          
         `}
       </style>
     </Layout>

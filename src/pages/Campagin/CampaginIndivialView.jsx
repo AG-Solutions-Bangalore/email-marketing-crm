@@ -17,7 +17,10 @@ import toast from "react-hot-toast";
 
 const CampaginIndivialView = () => {
   const [campagindata, setCampaginData] = useState([]);
-  const [campagindatastatus, setCampaginDataStatus] = useState([]);
+  const [campagindatastatus, setCampaginDataStatus] = useState({
+    campaign_list_status: "",
+    campaign_list_name: "",
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -64,14 +67,23 @@ const CampaginIndivialView = () => {
         accessorKey: "campaign_date",
         header: "Date",
         size: 150,
-        Cell: ({ value }) => moment(value).format("DD-MM-YYYY"),
+        Cell: ({ row }) => {
+          const date = row.original.campaign_date;
+          const date1 = moment(date).format("DD-MM-YYYY");
+          return date1;
+        },
       },
 
       {
         accessorKey: "campaign_list_name",
-        header: "Campagin List Name",
+        header: "Campaign List Name",
         size: 100,
+        Cell: () => {
+          const campaignListName = campagindatastatus?.campaign_list_name;
+          return <span>{campaignListName || "N/A"}</span>;
+        },
       },
+
       {
         accessorKey: "template_name",
         header: "Template Name",
@@ -103,7 +115,7 @@ const CampaginIndivialView = () => {
         ),
       },
     ],
-    []
+    [campagindatastatus]
   );
 
   const onSubmit = async (e) => {
@@ -149,7 +161,6 @@ const CampaginIndivialView = () => {
           }}
           flexWrap="wrap"
         >
-          {" "}
           <Text size="xl" weight={700}>
             <Flex justify="center" align="center" sx={{ gap: "8px" }}>
               <IconArrowBarLeft
@@ -164,7 +175,7 @@ const CampaginIndivialView = () => {
           <Flex gap="sm">
             <MRT_GlobalFilterTextInput table={table} />
             <MRT_ToggleFiltersButton table={table} />
-            {campagindatastatus.campaign_list_status === "Pending" && (
+            {campagindatastatus?.campaign_list_status === "Pending" && (
               <Button
                 className="w-36 text-white bg-red-600 !important hover:bg-red-400 hover:animate-pulse"
                 onClick={handleOpen}
