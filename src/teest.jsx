@@ -1,60 +1,83 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../../layout/Layout";
 import axios from "axios";
 import BASE_URL from "../../base/BaseUrl";
 import { IconInfoCircle } from "@tabler/icons-react";
 import toast from "react-hot-toast";
-import ReactQuill from "react-quill";
+import ReactQuill from "react-quill"; // Import React Quill
 import "react-quill/dist/quill.snow.css";
 import { Button } from "@mantine/core";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import SelectInput from "../../components/common/SelectInput";
+import { CKEditor } from "ckeditor4-react";
 
-const AddTemplate = () => {
+const status = [
+  { value: "Active", label: "Active" },
+  { value: "Inactive", label: "Inactive" },
+];
+
+const EditTemplate = () => {
   const [template, setTemplate] = useState({
     template_name: "",
-    template_design: "", // For HTML content
+    template_design: "",
     template_subject: "",
     template_url: "",
+    template_status: "",
   });
-
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [isHtmlView, setIsHtmlView] = useState(false); // State for toggling HTML view
+  const { id } = useParams();
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  const getTemplateData = async () => {
+    try {
+      const res = await axios.get(
+        `${BASE_URL}/panel-fetch-template-by-id/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.data?.template) {
+        setTemplate(res.data.template);
+      } else {
+        throw new Error("Template data is missing");
+      }
+    } catch (error) {
+      console.error("Failed to fetch profile:", error);
+      toast.error("Failed to load profile data");
+    }
+  };
+  useEffect(() => {
+    getTemplateData();
+  }, [id]);
 
   const onInputChange = (name, value) => {
-    setTemplate((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setTemplate((prev) => ({ ...prev, [name]: value }));
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setIsButtonDisabled(true);
-
     const data = {
       template_name: template.template_name,
       template_subject: template.template_subject,
-      template_design: template.template_design, // Already in HTML
+      template_design: template.template_design,
       template_url: template.template_url,
+      template_status: template.template_status,
     };
-
     try {
-      await axios.post(`${BASE_URL}/panel-create-template`, data, {
+      await axios.put(`${BASE_URL}/panel-update-template/${id}`, data, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-      toast.success("Template Created Successfully");
+      toast.success("Template Updated Successfully");
       navigate("/templates");
-      setTemplate({
-        template_name: "",
-        template_subject: "",
-        template_design: "", // Reset HTML content
-        template_url: "",
-      });
     } catch (error) {
-      toast.error("Error creating template");
+      toast.error("Error updating template");
       console.error(error);
     } finally {
       setIsButtonDisabled(false);
@@ -71,25 +94,29 @@ const AddTemplate = () => {
   const inputClass =
     "w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 border-green-500";
 
+  useEffect(() => {
+    if (template.template_design && window.CKEDITOR.instances.template_design) {
+      window.CKEDITOR.instances.template_design.setData(
+        template.template_design
+      );
+    }
+  }, [template.template_design]);
+
   return (
     <Layout>
-      <div className="bg-[#FFFFFF] p-2 rounded-lg">
-        <div className="sticky top-0 p-2 mb-4 border-b-2 border-green-500 rounded-lg bg-[#E1F5FA]">
-          <h2 className="px-5 text-[black] text-lg flex flex-row justify-between items-center rounded-xl p-2">
-            <div className="flex items-center gap-2">
-              <IconInfoCircle className="w-4 h-4" />
-              <span>Template Add</span>
-            </div>
+      <div className="bg-white p-4 rounded-lg">
+        <div className="sticky top-0 p-2 mb-4 border-b-2 border-green-500 bg-[#E1F5FA] rounded-lg">
+          <h2 className="px-5 text-black text-lg flex items-center gap-2">
+            <IconInfoCircle className="w-4 h-4" />
+            Template Edit
           </h2>
         </div>
-        <hr />
-
         <form
           autoComplete="off"
           onSubmit={onSubmit}
           className="w-full max-w-7xl mx-auto p-6 space-y-8"
         >
-          <div className="grid grid-cols-1 p-4 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 p-4 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
               <FormLabel required>Template Name</FormLabel>
               <input
@@ -101,7 +128,16 @@ const AddTemplate = () => {
                 required
               />
             </div>
-
+            <div>
+              <SelectInput
+                label="Status"
+                options={status}
+                required
+                value={template.template_status || ""}
+                name="template_status"
+                onChange={(e) => onInputChange(e.target.name, e.target.value)}
+              />
+            </div>
             <div>
               <FormLabel required>Subject</FormLabel>
               <input
@@ -114,7 +150,7 @@ const AddTemplate = () => {
               />
             </div>
             <div>
-              <FormLabel>Template URL</FormLabel>
+              <FormLabel >Template URL</FormLabel>
               <input
                 type="text"
                 name="template_url"
@@ -124,66 +160,31 @@ const AddTemplate = () => {
               />
             </div>
           </div>
-
           <div className="editor-container">
             <FormLabel required>Template Design</FormLabel>
 
-            {/* Toggle HTML View or ReactQuill Editor */}
-            <Button
-              onClick={() => setIsHtmlView(!isHtmlView)}
-              className="mb-4 text-white bg-blue-600"
-            >
-              {isHtmlView ? "Switch to Editor" : "Switch to HTML View"}
-            </Button>
-
-            {isHtmlView ? (
-              // Allow copy-pasting HTML content in the textarea
-              <div
-                className="p-4 bg-gray-100 border rounded"
-                style={{
-                  minHeight: "200px",
-                  overflowY: "auto",
-                  whiteSpace: "pre-wrap", // Ensures whitespace is respected
-                  wordBreak: "break-word", // Breaks long words to avoid overflow
-                }}
-              >
-                <textarea
-                  value={template.template_design}
-                  onChange={(e) =>
-                    setTemplate((prev) => ({
-                      ...prev,
-                      template_design: e.target.value,
-                    }))
-                  }
-                  placeholder="Paste your HTML code here"
-                  className="w-full h-full bg-gray-100 p-2 border rounded"
-                  style={{ minHeight: "200px" }}
-                />
-              </div>
-            ) : (
-              // Use ReactQuill for editing
-              <ReactQuill
-                theme="snow"
-                value={template.template_design}
-                onChange={(content) =>
-                  setTemplate((prev) => ({ ...prev, template_design: content }))
-                }
-                className="editor"
-                placeholder="Type your content here..."
-              />
-            )}
+            <CKEditor
+              name="template_design" // This should match the ID in `window.CKEDITOR.instances`
+              value={template.template_design}
+              onChange={(event) => {
+                const editorData = event.editor.getData();
+                onInputChange("template_design", editorData);
+              }}
+              config={{
+                versionCheck: false,
+              }}
+            />
           </div>
-
           <div className="flex flex-col sm:flex-row sm:justify-center items-center gap-4">
             <Button
-              className="w-full sm:w-36 text-white bg-blue-600"
+              className="w-36 text-white bg-blue-600"
               type="submit"
               disabled={isButtonDisabled}
             >
-              {isButtonDisabled ? "Submitting..." : "Submit"}
+              {isButtonDisabled ? "Updating..." : "Update"}
             </Button>
             <Button
-              className="w-full sm:w-36 text-white bg-red-600"
+              className="w-36 text-white bg-red-600"
               onClick={() => navigate("/templates")}
             >
               Back
@@ -191,12 +192,19 @@ const AddTemplate = () => {
           </div>
         </form>
       </div>
-
       <style>
         {`
-          .editor {
-            border: 1px solid #ced4da;
-            border-radius: 4px;
+          .editor-container .ql-editor {
+            min-height: 20rem;
+            max-height: 40rem;
+            overflow-y: auto;
+            overflow-x: auto;
+          }
+          @media (max-width: 768px) {
+            .editor-container .ql-editor {
+              min-height: 15rem;
+              max-height: 30rem;
+            }
           }
         `}
       </style>
@@ -204,4 +212,4 @@ const AddTemplate = () => {
   );
 };
 
-export default AddTemplate;
+export default EditTemplate;
