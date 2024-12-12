@@ -57,7 +57,7 @@ const Campagin = () => {
         header: "Date",
         size: 150,
         Cell: ({ row }) => {
-          const date = row.original.campaign_list_date; 
+          const date = row.original.campaign_list_date;
           const date1 = moment(date).format("DD-MM-YYYY");
           return date1;
         },
@@ -79,9 +79,9 @@ const Campagin = () => {
 
           if (Groupname == null) {
             return IndividualName;
+          } else {
+            return Groupname;
           }
-
-          return <span>{`${IndividualName}`}</span>;
         },
       },
 
