@@ -99,21 +99,25 @@ const CampaginIndivialView = () => {
         header: "Status",
         size: 50,
       },
-      {
-        id: "id",
-        header: "Action",
-        size: 50,
-        enableHiding: false,
-        Cell: ({ row }) => (
-          <Flex gap="xs">
-            <IconTrash
-              className="cursor-pointer text-blue-600 hover:text-red-800"
-              title="Delete"
-              onClick={() => onDelete(row.original.id)}
-            />
-          </Flex>
-        ),
-      },
+      ...(campagindatastatus?.campaign_list_status === "Pending"
+        ? [
+            {
+              id: "id",
+              header: "Action",
+              size: 50,
+              enableHiding: false,
+              Cell: ({ row }) => (
+                <Flex gap="xs">
+                  <IconTrash
+                    className="cursor-pointer text-blue-600 hover:text-red-800"
+                    title="Delete"
+                    onClick={() => onDelete(row.original.id)}
+                  />
+                </Flex>
+              ),
+            },
+          ]
+        : []),
     ],
     [campagindatastatus]
   );
