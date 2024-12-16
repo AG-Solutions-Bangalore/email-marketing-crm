@@ -12,6 +12,7 @@ import {
   OutlinedInput,
   FormControlLabel,
   Checkbox,
+  ListItemText,
 } from "@mui/material";
 import SelectInput from "../../components/common/SelectInput";
 import dayjs from "dayjs";
@@ -269,7 +270,7 @@ const AddCampagin = () => {
             {campagin.campaign_list_individual ? null : (
               <FormControl sx={{ width: "100%" }}>
                 <FormLabel>Group Name</FormLabel>
-                <Select
+                {/* <Select
                   labelId="demo-group-name-label"
                   id="demo-group-name"
                   multiple
@@ -289,13 +290,48 @@ const AddCampagin = () => {
                           boxShadow: "0 0 0 1px rgba(66, 165, 245, 0.5)",
                         },
                       }}
+                          size="small"
+                        />
+                      }
+                    >
+                      {group.map((group) => (
+                        <MenuItem key={group.id} value={group.id}>
+                          {group.group_name}
+                        </MenuItem>
+                      ))}
+                    </Select> */}
+                <Select
+                  labelId="demo-group-name-label"
+                  id="demo-group-name"
+                  multiple
+                  value={campagin.campaign_list_group}
+                  onChange={handleGroupChange}
+                  input={
+                    <OutlinedInput
+                      sx={{
+                        width: "100%",
+                        fontSize: "0.75rem",
+                        border: "1px solid #4caf50",
+                        borderRadius: "8px",
+                        "&:focus": {
+                          outline: "none",
+                          borderColor: "#42a5f5",
+                          boxShadow: "0 0 0 1px rgba(66, 165, 245, 0.5)",
+                        },
+                      }}
                       size="small"
                     />
                   }
+                  renderValue={(selected) => selected.join(", ")}
                 >
-                  {group.map((group) => (
-                    <MenuItem key={group.id} value={group.id}>
-                      {group.group_name}
+                  {group.map((groupItem) => (
+                    <MenuItem key={groupItem.id} value={groupItem.id}>
+                      <Checkbox
+                        checked={campagin.campaign_list_group.includes(
+                          groupItem.id
+                        )}
+                      />
+                      <ListItemText primary={groupItem.group_name} />
                     </MenuItem>
                   ))}
                 </Select>

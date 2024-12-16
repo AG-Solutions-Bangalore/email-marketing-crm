@@ -28,6 +28,7 @@ import Setting from "./pages/Setting/Setting";
 import ReportReadView from "./pages/Report/ReportRead/ReportView";
 import ReportCampaginView from "./pages/Report/ReportCampagin/ReportCampaginView";
 import ReportVisitedView from "./pages/Report/ReportVisited/ReportVisitedView";
+import Holiday from "./pages/Holiday/Holiday";
 const App = () => {
   return (
     <>
@@ -59,7 +60,7 @@ const App = () => {
         <Route path="/report/view" element={<ReportReadView />} />
         <Route path="/report/unsubscribe" element={<ReportUnsubscribe />} />
 
-        <Route path="/report/visted" element={<ReportVisted/>} />
+        <Route path="/report/visted" element={<ReportVisted />} />
         <Route path="/report/visted/view" element={<ReportVisitedView />} />
         <Route path="/report/campaign" element={<ReportCampagin />} />
         <Route path="/report/campaign/view" element={<ReportCampaginView />} />
@@ -67,6 +68,7 @@ const App = () => {
         <Route path="/Contact/add" element={<AddContact />} />
         <Route path="/Contact/edit/:id" element={<EditContact />} />
         <Route path="/Contact/import" element={<ContactImport />} />
+        <Route path="/holiday" element={<Holiday />} />
 
         {/* //group */}
 
