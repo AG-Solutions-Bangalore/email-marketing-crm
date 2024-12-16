@@ -47,7 +47,7 @@ const AppProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const currentPath = location.pathname;
-
+    console.log(currentPath);
     if (error) {
       localStorage.clear();
       navigate("/maintenance");
@@ -55,7 +55,6 @@ const AppProvider = ({ children }) => {
       if (token) {
         const allowedPath = [
           "/home",
-          //template
           "/templates",
           "/templates/add",
           "/campaigns",
@@ -73,6 +72,7 @@ const AppProvider = ({ children }) => {
           "/developer",
           "/test",
           "/setting",
+          "/holiday",
           "/report/view",
           "/report/campaign/view",
           "/report/visted",

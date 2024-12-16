@@ -12,6 +12,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Tooltip,
 } from "@mui/material";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -141,7 +142,7 @@ function ReportCampaginView() {
   return (
     <Layout>
       <div className="mt-3">
-        <div className="flex  md:flex-row justify-between items-center  p-4 space-y-4 md:space-y-0">
+        {/* <div className="flex  md:flex-row justify-between items-center  p-4 space-y-4 md:space-y-0">
           <div className="w-full md:w-auto font-bold flex">
             <IconArrowBarLeft
               className="mr-2 align-center cursor-pointer"
@@ -151,32 +152,79 @@ function ReportCampaginView() {
             />
             Report CampaignView
           </div>
-          {/* className="flex sm:justify-between md:flex-row items-center space-x-4 md:space-y-0 md:space-x-4 w-full md:w-auto" */}
           <div className="flex flex-row space-x-4">
-            <button
-              variant="text"
-              className="flex items-center space-x-2"
-              onClick={handleSavePDF}
-            >
-              <IconFileTypePdf />
-              <span className="hidden sm:inline">Download</span>{" "}
-            </button>
-
-            <button
-              variant="text"
-              className="flex items-center space-x-2"
-              onClick={handleExport}
-            >
-              <IconFileTypeXls />
-              <span className="hidden sm:inline">Download</span>{" "}
-            </button>
-
+            <Tooltip title="Save as PDF" arrow>
+              <button
+                variant="text"
+                className="flex items-center space-x-2"
+                onClick={handleSavePDF}
+              >
+                <IconFileTypePdf />
+              </button>
+            </Tooltip>
+            <Tooltip title="Save as PDF" arrow>
+              <button
+                variant="text"
+                className="flex items-center space-x-2"
+                onClick={handleExport}
+              >
+                <IconFileTypeXls />
+              </button>
+            </Tooltip>
+            <Tooltip title="Save as PDF" arrow>
+              <ReactToPrint
+                trigger={() => (
+                  <button
+                    variant="text"
+                    className="flex items-center space-x-2"
+                  >
+                    <IconPrinter />
+                  </button>
+                )}
+                content={() => componentRef.current}
+              />
+            </Tooltip>
+          </div>
+        </div> */}
+        <div className="flex md:flex-row justify-between items-center p-4 space-y-4 md:space-y-0">
+          <div className="w-full md:w-auto font-bold flex">
+            <IconArrowBarLeft
+              className="mr-2 align-center cursor-pointer"
+              onClick={() => {
+                navigate("/report/campaign");
+              }}
+            />
+            Report CampaignView
+          </div>
+          <div className="flex flex-row space-x-4">
+            <Tooltip title="Save as PDF" arrow>
+              <button
+                variant="text"
+                className="flex items-center space-x-2"
+                onClick={handleSavePDF}
+              >
+                <IconFileTypePdf />
+              </button>
+            </Tooltip>
+            <Tooltip title="Export as Excel" arrow>
+              <button
+                variant="text"
+                className="flex items-center space-x-2"
+                onClick={handleExport}
+              >
+                <IconFileTypeXls />
+              </button>
+            </Tooltip>
             <ReactToPrint
               trigger={() => (
-                <button variant="text" className="flex items-center space-x-2">
-                  <IconPrinter />
-                  <span className="hidden sm:inline">Print Receipt</span>
-                </button>
+                <Tooltip title="Print" arrow>
+                  <button
+                    variant="text"
+                    className="flex items-center space-x-2"
+                  >
+                    <IconPrinter />
+                  </button>
+                </Tooltip>
               )}
               content={() => componentRef.current}
             />

@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { Button } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
-import { IconMail, IconUser, IconCircleX } from "@tabler/icons-react";
+import { IconMail, IconUser, IconCircleX, IconCalendarMonth } from "@tabler/icons-react";
 import Logout from "../../components/Logout";
 import axios from "axios";
 import BASE_URL from "../../base/BaseUrl";
@@ -239,6 +239,12 @@ const Profile = () => {
             <IconSettings width={20} />
           </ListItemIcon>
           <ListItemText>Setting</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => navigate("/holiday")}>
+          <ListItemIcon>
+            <IconCalendarMonth width={20} />
+          </ListItemIcon>
+          <ListItemText>Holiday</ListItemText>
         </MenuItem>
 
         <Box mt={1} py={1} px={2}>

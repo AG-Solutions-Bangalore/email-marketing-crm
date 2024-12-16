@@ -94,7 +94,7 @@ Test BBC,Rohit,testaaa@gmail.com,7852585285,"3rd Cross 4th Main Bangalore",Karna
                 onChange={handleFileChange}
                 className={inputClass}
                 required
-                accept=".csv"
+                // accept=".csv"
                 disabled={isButtonDisabled}
               />
             </div>
